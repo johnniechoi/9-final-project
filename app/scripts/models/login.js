@@ -7,7 +7,6 @@ $.ajaxSetup({
   }
 });
 
-
 var url = 'https://masterj.herokuapp.com/';
 var resultPromise = $.ajax(url).then(function(data){
   console.log(data);

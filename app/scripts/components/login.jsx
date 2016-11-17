@@ -4,10 +4,6 @@ var $ = require('jquery')
 var User = require('../models/user.js').User;
 var NavBar = require('../../template.jsx').NavBar;
 
-$.ajax('https://greenville-foreclosure.herokuapp.com/api').then(function(data){
-  console.log('this is working!', data);
-})
-
 require('../models/login.js')
 
 var response = function setHeader(response){
@@ -135,7 +131,7 @@ var AccountContainer = React.createClass({
     },
   render: function(){
     return(
-      <div className="container">
+      <div className="">
         <div className="row">
           <div className="col-md-12 ">
             <NavBar/>
