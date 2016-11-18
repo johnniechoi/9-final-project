@@ -5,12 +5,14 @@ var $ = require('jquery')
 
 var AccountContainer = require('./components/login.jsx').AccountContainer;
 var SearchPage = require('./components/search.jsx').SearchPage;
+var DetailsPage = require('./components/details.jsx').DetailsPage;
 
 var AppRouter = Backbone.Router.extend({
   routes: {
     '': 'index',
     'login/': 'login',
-    'search/': 'search'
+    'search/': 'search',
+    'details/:id/': 'details'
   },
 
   index: function(){
@@ -25,6 +27,12 @@ var AppRouter = Backbone.Router.extend({
       document.getElementById('app')
     )
   },
+  details: function(objectId){
+    ReactDOM.render(
+      React.createElement(DetailsPage, {objectId: objectId}),
+      document.getElementById('app')
+    )
+  }
 })
 
 var router = new AppRouter();

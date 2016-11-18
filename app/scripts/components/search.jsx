@@ -11,30 +11,48 @@ var Items = React.createClass({
   render: function(){
     // console.log(encodeURIComponent());
 
+    // var zillowGetRequest =  $.get(http://www.zillow.com/webservice/GetSearchResults.htm?zws-id=X1-ZWz19hs5hlzz0r_493z4&address=2+Wild+Eve+Way&citystatezip=29650 , function(xml) {
+    //   var $jsonObj = $(xml);
+    //   amount = $jsonObj.find('amount').text()
+    //   console.log('amount', '$' + amount);
+    //   // var SoldAmount = house.get('SoldAmount')
+    //   console.log('encoding:', parseFloat(SoldAmount.replace('$', '').replace(',', '')));
+    // })
+
     var house = this.props.state.houseCollection.models
     var houseListing = house.map(function(house){
-      var address = encodeURIComponent(house.get('Address')).replace(/%20/g, '+');
-      var zipcode = house.get('zipcode');
-      var zillowAddress = "http://localhost:3000/zillow/?address=" + address + "&zipcode=" + zipcode;
+
+      //this following is for when I can pull from the Zillow server and didn't hit the limit!
+      // var address = encodeURIComponent(house.get('Address')).replace(/%20/g, '+');
+      // var zipcode = house.get('zipcode');
+      // var zillowAddress = "http://localhost:3000/zillow/?address=" + address + "&zipcode=" + zipcode;
       var amount;
-      var zillowGetRequest =  $.get(zillowAddress , function(xml) {
-        var $jsonObj = $(xml);
-        amount = $jsonObj.find('amount').text()
-        console.log('amount', '$' + amount);
-        // var SoldAmount = house.get('SoldAmount')
-        // console.log('encoding:', parseFloat(SoldAmount.replace('$', '').replace(',', '')));
-      })
+      amount = parseFloat(house.get('amount').replace(',', ''))
+      // console.log(amount);
+      // var zillowGetRequest =  $.get(zillowAddress , function(xml) {
+      //   var $jsonObj = $(xml);
+      //   amount = $jsonObj.find('amount').text()
+      //   console.log('amount', '$' + amount);
+        var SoldAmount = parseFloat(house.get('SoldAmount').replace('$', '').replace(',', ''))
+        // console.log('encoding:', SoldAmount);
+      // })
       return (
         <tr key={house.get('objectId')}>
           <th>
             <img src="https://unsplash.it/300/200/?random"></img>
           </th>
           <th>
-            <a href={'#/house/' + house.get('objectId') + '/'}>
-              {house.get('SoldAmount')}
+            Foreclose Value: {house.get('SoldAmount')}
+          </th>
+          <th>
+            Estimated Value: {house.get('amount')}
+          </th>
+          <th>
+            <a href={'#/details/' + house.get('objectId') + '/'}>
+              Difference: {SoldAmount-amount}
             </a>
           </th>
-          <th> {house.get('Address')}</th><th>{house.get('city')}</th><th>{house.get('zipcode')}</th>
+          <th> {house.get('Address')} {house.get('city')} {house.get('zipcode')}</th>
         </tr>
       )
     })
