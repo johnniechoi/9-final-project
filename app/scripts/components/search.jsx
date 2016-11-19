@@ -11,7 +11,7 @@ var Items = React.createClass({
   render: function(){
     // console.log(encodeURIComponent());
 
-    // var zillowGetRequest =  $.get(http://www.zillow.com/webservice/GetSearchResults.htm?zws-id=X1-ZWz19hs5hlzz0r_493z4&address=2+Wild+Eve+Way&citystatezip=29650 , function(xml) {
+    // var zillowGetRequest =  $.get('http://www.zillow.com/webservice/GetSearchResults.htm?zws-id=X1-ZWz19hs5hlzz0r_493z4&address=2+Wild+Eve+Way&citystatezip=29650' , function(xml) {
     //   var $jsonObj = $(xml);
     //   amount = $jsonObj.find('amount').text()
     //   console.log('amount', '$' + amount);

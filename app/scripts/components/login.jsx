@@ -16,7 +16,7 @@ var response = function setHeader(response){
   });
 }
 
-  // console.log(localStorage.user);
+  console.log(localStorage.user);
 
 var SignInContainer = React.createClass({
   getInitialState: function(){

@@ -4,20 +4,21 @@ var Backbone = require('backbone');
 
 var NavBar = require('../../template.jsx').NavBar;
 var House = require('../models/homes.js').House;
+var RenovationContainer = require('./form.jsx').RenovationContainer;
 
 var DisplayDetail = React.createClass({
   render: function(){
     var house = this.props.house
-    console.log(house);
+    // console.log(house);
     var foreclosedValue = house.get('SoldAmount')?parseFloat(house.get('SoldAmount').replace('$', '').replace(',', '')):null
     var zestimate = house.get('amount')?parseFloat(house.get('amount').replace(',', '')):null
     var difference = foreclosedValue - zestimate;
-    console.log(difference);
+    // console.log(difference);
 
     return (
       <div className="container">
         <div className="col-md-4">
-          <img src="https://unsplash.it/300/300/?random" ></img>
+          <img src="https://maps.googleapis.com/maps/api/streetview?channel=ldp-publicrecord&location=512+Sellwood+Cir%2C+Simpsonville%2C+SC+29680&size=665x441&client=gme-redfin&signature=raAoVuSezjKPjkGNFm3W_MTYDsk=" ></img>
         </div>
         <div className="col-md-8">
           <h1>{house.get('Address')}</h1>
@@ -39,31 +40,19 @@ var DisplayDetail = React.createClass({
   }
 })
 
-var DetailForm = React.createClass({
-  render: function(){
-    return (
-      <div>
-        <h1>Form! Form! Form!</h1>
-        <input className="list-group-item" placeholder="Project Estimates Here!" ></input>
-        <input className="list-group-item" placeholder="Dollar Amount!" ></input>
-      </div>
-    )
-  }
-})
-
 var DetailsPage = React.createClass({
   getInitialState: function(){
     return {
       house: new House(),
-      Address: '',
-      zipcode: '',
-      city: '',
-      Attorney: '',
-      Plaintiff: '',
-      SoldAmount: '',
-      amount: '',
-      DateofSale: '',
-      CaseNumer: ''
+      // Address: '',
+      // zipcode: '',
+      // city: '',
+      // Attorney: '',
+      // Plaintiff: '',
+      // SoldAmount: '',
+      // amount: '',
+      // DateofSale: '',
+      // CaseNumer: ''
     }
   },
   componentWillMount: function(){
@@ -75,14 +64,14 @@ var DetailsPage = React.createClass({
       self.setState({ house })
       // console.log(house.get('amount'));
     })
-    // console.log(house.get('amount'));
   },
   render: function(){
+    // console.log('details state:', this.state);
     return(
       <div className="container">
         <NavBar/>
         <DisplayDetail house={this.state.house}/>
-        <DetailForm/>
+        <RenovationContainer state={this.state}/>
       </div>
     )
   }
