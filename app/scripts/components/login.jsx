@@ -1,5 +1,8 @@
 var React = require('react');
 var $ = require('jquery')
+var Backbone = require('backbone')
+var Modal = require('react-modal');
+
 
 var User = require('../models/user.js').User;
 var NavBar = require('../../template.jsx').NavBar;
@@ -18,12 +21,41 @@ var response = function setHeader(response){
 
   console.log(localStorage.user);
 
+const customStyles = {
+ content : {
+   top                   : '50%',
+   left                  : '50%',
+   right                 : 'auto',
+   bottom                : 'auto',
+   marginRight           : '-50%',
+   transform             : 'translate(-50%, -50%)',
+   width                 : '500px'
+ }
+};
+
 var SignInContainer = React.createClass({
   getInitialState: function(){
+    // console.log('props', this.props);
     return {
       user: '',
-      password: ''
+      password: '',
+      modalIsOpen: this.props.modalIsOpen
     }
+  },
+  componentWillReceiveProps: function(nextProps){
+    this.setState({modalIsOpen: nextProps.modal.modalIsOpen});
+    // console.log('componentWill', nextProps);
+  },
+  openModal: function() {
+    this.setState({modalIsOpen: true});
+  },
+  afterOpenModal: function() {
+    // references are now sync'd and can be accessed.
+    // this.refs.subtitle.style.color = '#f00';
+  },
+  closeModal: function(e) {
+    this.setState({modalIsOpen: false});
+    // localStorage.setItem('loggedIn', this.state.username);
   },
   handleSignIn: function(e){
     this.setState({user: e.target.value});
@@ -38,12 +70,22 @@ var SignInContainer = React.createClass({
     this.props.newUser(user, password);
     this.setState({user: '', password: ''})
     // console.log(user, password);
+    this.setState({modalIsOpen: false});
+    Backbone.history.navigate('search/', {trigger: true});
   },
   render: function(){
     return(
-      <div>
-        <div className="">
-          <div className="col-md-6">
+      <Modal
+        isOpen={this.state.modalIsOpen}
+        onAfterOpen={this.afterOpenModal}
+        onRequestClose={this.closeModal}
+        style={customStyles}
+        contentLabel="Example Modal"
+      >
+
+      <div className="half-black">
+        <div className="modal-body">
+          <div className="body-modal">
             <h2>Register</h2>
             <form onSubmit={this.handleLogin} id="signup">
               <div className="form-group">
@@ -59,6 +101,7 @@ var SignInContainer = React.createClass({
           </div>
         </div>
       </div>
+     </Modal>
     )
   }
 })
@@ -78,11 +121,16 @@ var LoginContainer = React.createClass({
     };
     this.props.loginRequests(accountInfo)
     this.setState({user: '', password: ''});
+    Backbone.history.navigate('search/', {trigger: true});
+  },
+  handleClick: function(){
+    this.setState({modalIsOpen: true});
   },
   render: function(){
+    // console.log(this.props);
     return(
       <div className="">
-        <div className="col-md-6">
+        <div className="col-md-offset-3 col-md-6 half-black login-form">
           <h2>Login</h2>
           <form onSubmit={this.handleLogin} id="login">
             <div className="form-group">
@@ -93,9 +141,11 @@ var LoginContainer = React.createClass({
               <label htmlFor="password-login">Password</label>
               <input onChange={this.handlePassword} className="form-control" name="password" id="password-login" type="password" placeholder="Password Please" />
             </div>
-            <input className="btn btn-primary" type="submit" value="Beam Me Up!" />
+            <button className="btn btn-primary" type="submit" value="Beam Me Up!">Beam Me Up!</button>
+            <button onClick={this.handleClick} className="btn btn-warning" type="button" value="">Sign Up!</button>
           </form>
         </div>
+        <SignInContainer newUser={this.props.newUser} modal={this.state} />
       </div>
     )
   }
@@ -104,7 +154,7 @@ var LoginContainer = React.createClass({
 var AccountContainer = React.createClass({
   getInitialState: function(){
     return {
-      user: new User()
+      user: new User(),
     }
   },
   newUser: function(user, password){
@@ -131,12 +181,11 @@ var AccountContainer = React.createClass({
     },
   render: function(){
     return(
-      <div className="">
+      <div className="background-image">
+        <NavBar/>
         <div className="row">
           <div className="col-md-12 ">
-            <NavBar/>
-            <LoginContainer loginRequests={this.loginRequests}/>
-            <SignInContainer newUser={this.newUser}/>
+            <LoginContainer newUser={this.newUser} loginRequests={this.loginRequests}/>
           </div>
         </div>
       </div>

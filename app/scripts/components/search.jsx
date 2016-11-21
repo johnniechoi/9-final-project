@@ -10,22 +10,14 @@ var $ = require('jQuery');
 var Items = React.createClass({
   render: function(){
     // console.log(encodeURIComponent());
-
-    // var zillowGetRequest =  $.get('http://www.zillow.com/webservice/GetSearchResults.htm?zws-id=X1-ZWz19hs5hlzz0r_493z4&address=2+Wild+Eve+Way&citystatezip=29650' , function(xml) {
-    //   var $jsonObj = $(xml);
-    //   amount = $jsonObj.find('amount').text()
-    //   console.log('amount', '$' + amount);
-    //   // var SoldAmount = house.get('SoldAmount')
-    //   console.log('encoding:', parseFloat(SoldAmount.replace('$', '').replace(',', '')));
-    // })
-
     var house = this.props.state.houseCollection.models
     var houseListing = house.map(function(house){
-
+// https://private-03bdb-zillowdata.apiary-mock.com/questions
       //this following is for when I can pull from the Zillow server and didn't hit the limit!
-      // var address = encodeURIComponent(house.get('Address')).replace(/%20/g, '+');
+      var address = encodeURIComponent(house.get('Address')).replace(/%20/g, '+');
       // var zipcode = house.get('zipcode');
       // var zillowAddress = "http://localhost:3000/zillow/?address=" + address + "&zipcode=" + zipcode;
+      // // var zillowAddress = 'https://private-03bdb-zillowdata.apiary-mock.com/questions'
       var amount;
       amount = parseFloat(house.get('amount').replace(',', ''))
       // console.log(amount);
@@ -37,32 +29,22 @@ var Items = React.createClass({
         // console.log('encoding:', SoldAmount);
       // })
       return (
-        <tr key={house.get('objectId')}>
-          <th>
-            <img src="https://unsplash.it/300/200/?random"></img>
-          </th>
-          <th>
-            Foreclose Value: {house.get('SoldAmount')}
-          </th>
-          <th>
-            Estimated Value: {house.get('amount')}
-          </th>
-          <th>
-            <a href={'#/details/' + house.get('objectId') + '/'}>
-              Difference: {SoldAmount-amount}
-            </a>
-          </th>
-          <th> {house.get('Address')} {house.get('city')} {house.get('zipcode')}</th>
-        </tr>
+        <a href={'#/details/' + house.get('objectId') + '/'} className="search-tile">
+          <div className="col-md-4" key={house.get('objectId')}>
+          <img src="https://unsplash.it/300/200/?random"></img>
+          <h3>Difference: ${amount-SoldAmount}</h3>
+          <h4 href={'#/details/' + house.get('objectId') + '/'}> {house.get('Address')} </h4>
+          <p>{house.get('city')} {house.get('zipcode')}</p>
+          <p>Foreclose Value: {house.get('SoldAmount')}</p>
+          <p>Estimated Value: ${house.get('amount')}</p>
+        </div></a>
       )
     })
     // console.log('house:', house);
     return (
-      <div>
         <ul>
           {houseListing}
         </ul>
-      </div>
     )
   }
 })
@@ -70,7 +52,7 @@ var Items = React.createClass({
 var SearchBar = React.createClass({
   render: function(){
     return(
-      <div>
+      <div className="">
         <form className="navbar-form navbar-left">
           <div className="form-group">
             <input type="text" className="form-control" placeholder="Dunno how this works yet!"/>
@@ -102,13 +84,18 @@ var SearchPage = React.createClass({
     // console.log('state:', this.state);
     return(
       <div>
-        <div className="row">
-          <NavBar/>
-          <SearchBar/>
-        </div>
         <div>
-          <h1>Search this houses!</h1>
-          <Items state={this.state}/>
+          <NavBar/>
+          {/*
+          <div className="float-right">
+            <SearchBar/>
+          </div>
+          */}
+        </div>
+        <div className="container">
+          <div className="col-md-12">
+            <Items state={this.state}/>
+          </div>
         </div>
       </div>
     )

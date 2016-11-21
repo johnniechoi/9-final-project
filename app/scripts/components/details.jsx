@@ -17,12 +17,12 @@ var DisplayDetail = React.createClass({
 
     return (
       <div className="container">
-        <div className="col-md-4">
+        <div className="col-md-6">
+          <h1>{house.get('Address')}</h1>
           <img src="https://maps.googleapis.com/maps/api/streetview?channel=ldp-publicrecord&location=512+Sellwood+Cir%2C+Simpsonville%2C+SC+29680&size=665x441&client=gme-redfin&signature=raAoVuSezjKPjkGNFm3W_MTYDsk=" ></img>
         </div>
-        <div className="col-md-8">
-          <h1>{house.get('Address')}</h1>
-          <ul>
+        <div className="col-md-6 detail-listing">
+          <ol className="rectangle-list">
             <li>Case Number: {house.get('CaseNumber')}</li>
             <li>Attorney: {house.get('Attorney')}</li>
             <li>Date of Sale: {house.get('DateofSale')}</li>
@@ -33,7 +33,7 @@ var DisplayDetail = React.createClass({
             <li>City: {house.get('city')}</li>
             <li>Zipcode: {house.get('zipcode')}</li>
             <li><h4>Difference: ${difference}</h4></li>
-          </ul>
+          </ol>
         </div>
       </div>
     )
@@ -44,15 +44,6 @@ var DetailsPage = React.createClass({
   getInitialState: function(){
     return {
       house: new House(),
-      // Address: '',
-      // zipcode: '',
-      // city: '',
-      // Attorney: '',
-      // Plaintiff: '',
-      // SoldAmount: '',
-      // amount: '',
-      // DateofSale: '',
-      // CaseNumer: ''
     }
   },
   componentWillMount: function(){
@@ -68,10 +59,12 @@ var DetailsPage = React.createClass({
   render: function(){
     // console.log('details state:', this.state);
     return(
-      <div className="container">
+      <div>
         <NavBar/>
-        <DisplayDetail house={this.state.house}/>
-        <RenovationContainer state={this.state}/>
+        <div className="container">
+          <DisplayDetail house={this.state.house}/>
+          <RenovationContainer state={this.state}/>
+        </div>
       </div>
     )
   }

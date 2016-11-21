@@ -9,56 +9,67 @@ var RenoCollection = require('../models/homes.js').RenoCollection;
 
 var FormInput = React.createClass({
   getInitialState: function(){
-    console.log('form:', this.props.renoCollection);
-    return this.props
+    // console.log('form:', this.props.reno.toJSON())
+    return this.props.reno.toJSON()
   },
   componentWillReceiveProps: function(newProps){
-    console.log('newprops', newProps);
-    this.setState(newProps)
+    // console.log('newprops', newProps.reno.toJSON());
+    this.setState(newProps.reno.toJSON())
   },
   handleInputChange: function(e){
     var renoField = e.target;
     var newState = {};
     newState[renoField.name] = renoField.value;
+    // console.log('handleinputchange:', this.props.reno);
+    // console.log(renoField.name,':', renoField.value);
     this.setState(newState);
-    console.log('handleinputchange:', this.state);
-    console.log(renoField.name, ':', renoField.value);
-
-    this.state.set(renoField.name, renoField.value)
-    // console.log(this.props.state.reno.attributes)
+    this.props.reno.set(renoField.name, renoField.value)
+    // console.log('props:', this.props.renoCollection)
   },
   render: function(){
     var renoCollection = this.props.renoCollection
     // console.log('renoColelction:', renoCollection);
     return (
       <div>
-        <form>
-          <div className="form-group">
-            <input onChange={this.handleInputChange} value={this.state.project} type="text" name="project" className="form-control" placeholder="Project Name!" ></input>
-          </div>
-          <div className="form-group">
-            <input onChange={this.handleInputChange} value={this.state.estimate} type="text" name="estimate" className="form-control" placeholder="Estimate" ></input>
-          </div>
-        </form>
+        <div className="form-group">
+          <input onChange={this.handleInputChange} value={this.state.project} type="text" name="project" id="project" className="form-control" placeholder="Project Name!" ></input>
+        </div>
+        <div className="form-group">
+          <input onChange={this.handleInputChange} value={this.state.estimate} type="text" name="estimate" id='estimate' className="form-control" placeholder="Estimate" ></input>
+        </div>
       </div>
     )
   }
 })
 
 var Form = React.createClass({
+  handleSubmit: function(e){
+    e.preventDefault();
+    this.props.saveReno(this.props)
+    // console.log("handleSubmit:", this.props);
+  },
   render: function(){
     var renoCollection = this.props.renoCollection.models
-    // console.log(renoCollection);
+    // console.log('renocollection:', renoCollection);
     var renoCollectionFormset = renoCollection.map(function(reno){
       return(
-        <FormInput key={reno.cid} renoCollection={renoCollection} />
+        <FormInput key={reno.cid} reno={reno} renoCollection={renoCollection} />
       )
     })
     return(
-      <div>
-        <h2> Renovation Estimate </h2>
-        {renoCollectionFormset}
-          <button onClick={this.props.addReno} type="button" className="bt btn-success"> Add Renovation</button>
+      <div className="container">
+        <div className="col-md-5">
+          <h3> Renovation Estimate </h3>
+          <form onSubmit={this.handleSubmit}>
+            {renoCollectionFormset}
+            <button onClick={this.props.addReno} type="button" className="btn btn-success"> Add Renovation</button>
+          </form>
+        </div>
+        <div className="col-md-7">
+          <h3>Notes</h3>
+          <textarea className="form-control textarea" rows="3" type="text" placeholder="This house is great!" ></textarea>
+          <button type='submit' className="btn btn-alert">Save Renovation</button>
+        </div>
       </div>
     )
   }
@@ -82,22 +93,42 @@ var RenovationContainer = React.createClass({
     var self = this
     var renoCollection = this.state.renoCollection
     var objectId = this.props.state.house.get('objectId')
-    // console.log(objectId);
-    renoCollection.set({ objectId })
+    console.log('objectId:', objectId);
+    // renoCollection.set({ objectId });
     renoCollection.fetch().then(function(){
       self.setState({ renoCollection })
     })
+    // console.log(this.state);
   },
   addReno: function(){
     // console.log("addReno:", this.state.renoCollection);
-    this.state.renoCollection.add([{}])
+    this.state.renoCollection.add({
+      house: this.props.state.house.get('objectId')
+    })
     this.setState({ renoCollection: this.state.renoCollection })
+    console.log(this.state);
+  },
+  saveReno: function(renoData){
+    var self = this
+    var reno = this.state.renoCollection;
+    // console.log('renoData:', renoData);
+    console.log('state:', reno);
+
+    this.state.renoCollection.each(function (reno) {
+      reno.set('estimate', parseInt(reno.get('estimate')))
+      reno.save()
+    })
+
+
+    // .then(() => {
+    //   Backbone.history.navigate('/details/' + his.props.state.house.get('objectId') + "/", {trigger: true});
+    // });
   },
   render: function(){
     // console.log(this.state);
     return (
-      <div className="form-inline">
-        <Form reno={this.state.reno} renoCollection={this.state.renoCollection} addReno={this.addReno} />
+      <div className="form-inline container well">
+        <Form reno={this.state.reno} renoCollection={this.state.renoCollection} addReno={this.addReno} saveReno={this.saveReno} />
       </div>
     )
   }
