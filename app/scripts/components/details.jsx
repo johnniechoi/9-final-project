@@ -5,6 +5,8 @@ var Backbone = require('backbone');
 var NavBar = require('../../template.jsx').NavBar;
 var House = require('../models/homes.js').House;
 var RenovationContainer = require('./form.jsx').RenovationContainer;
+var RenoCollection = require('../models/homes.js').RenoCollection;
+;
 
 var DisplayDetail = React.createClass({
   render: function(){
@@ -12,7 +14,7 @@ var DisplayDetail = React.createClass({
     // console.log(house);
     var foreclosedValue = house.get('SoldAmount')?parseFloat(house.get('SoldAmount').replace('$', '').replace(',', '')):null
     var zestimate = house.get('amount')?parseFloat(house.get('amount').replace(',', '')):null
-    var difference = foreclosedValue - zestimate;
+    var difference = zestimate - foreclosedValue;
     // console.log(difference);
 
     return (
@@ -44,6 +46,7 @@ var DetailsPage = React.createClass({
   getInitialState: function(){
     return {
       house: new House(),
+      // RenoCollection: new RenoCollection()
     }
   },
   componentWillMount: function(){

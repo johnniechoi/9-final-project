@@ -1,6 +1,8 @@
 var Backbone = require('backbone');
 
-var User = Backbone.Model.extend({
+var ParseModel = require('./homes.js').ParseModel;
+
+var User = ParseModel.extend({
   urlRoot: 'https://masterj.herokuapp.com/users',
   signUp: function(){
       var self = this;

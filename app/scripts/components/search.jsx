@@ -29,8 +29,8 @@ var Items = React.createClass({
         // console.log('encoding:', SoldAmount);
       // })
       return (
-        <a href={'#/details/' + house.get('objectId') + '/'} className="search-tile">
-          <div className="col-md-4" key={house.get('objectId')}>
+        <a key={house.get('objectId')} href={'#/details/' + house.get('objectId') + '/'} className="search-tile">
+          <div className="col-md-4">
           <img src="https://unsplash.it/300/200/?random"></img>
           <h3>Difference: ${amount-SoldAmount}</h3>
           <h4 href={'#/details/' + house.get('objectId') + '/'}> {house.get('Address')} </h4>

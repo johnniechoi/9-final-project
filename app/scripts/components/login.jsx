@@ -3,7 +3,6 @@ var $ = require('jquery')
 var Backbone = require('backbone')
 var Modal = require('react-modal');
 
-
 var User = require('../models/user.js').User;
 var NavBar = require('../../template.jsx').NavBar;
 
@@ -35,19 +34,17 @@ const customStyles = {
 
 var SignInContainer = React.createClass({
   getInitialState: function(){
-    // console.log('props', this.props);
     return {
       user: '',
       password: '',
-      modalIsOpen: this.props.modalIsOpen
+      modalIsOpen: false
     }
   },
   componentWillReceiveProps: function(nextProps){
     this.setState({modalIsOpen: nextProps.modal.modalIsOpen});
-    // console.log('componentWill', nextProps);
   },
   openModal: function() {
-    this.setState({modalIsOpen: true});
+    this.setState({modalIsOpen: false});
   },
   afterOpenModal: function() {
     // references are now sync'd and can be accessed.
@@ -68,10 +65,11 @@ var SignInContainer = React.createClass({
     var user =  this.state.user;
     var password = this.state.password;
     this.props.newUser(user, password);
-    this.setState({user: '', password: ''})
+    this.setState({user: '', password: '', modalIsOpen: false})
     // console.log(user, password);
-    this.setState({modalIsOpen: false});
-    Backbone.history.navigate('search/', {trigger: true});
+    // this.setState({modalIsOpen: false})
+    this.props.modalClose()
+    // Backbone.history.navigate('search/', {trigger: true});
   },
   render: function(){
     return(
@@ -107,6 +105,9 @@ var SignInContainer = React.createClass({
 })
 
 var LoginContainer = React.createClass({
+  // getInitialState: function(){
+  //   return {modalIsOpen: null}
+  // },
   handleSignIn: function(e){
     this.setState({user: e.target.value});
   },
@@ -126,8 +127,10 @@ var LoginContainer = React.createClass({
   handleClick: function(){
     this.setState({modalIsOpen: true});
   },
+  modalClose: function(){
+    this.setState({modalIsOpen: false})
+  },
   render: function(){
-    // console.log(this.props);
     return(
       <div className="">
         <div className="col-md-offset-3 col-md-6 half-black login-form">
@@ -145,7 +148,7 @@ var LoginContainer = React.createClass({
             <button onClick={this.handleClick} className="btn btn-warning" type="button" value="">Sign Up!</button>
           </form>
         </div>
-        <SignInContainer newUser={this.props.newUser} modal={this.state} />
+        <SignInContainer newUser={this.props.newUser} modal={this.state} modalClose={this.modalClose} />
       </div>
     )
   }
@@ -167,11 +170,13 @@ var AccountContainer = React.createClass({
     var username = accountInfo.user;
     var password = accountInfo.password;
     $.get('https://masterj.herokuapp.com/login?username=' + username + '&password=' + password).then(function(response){
-        console.log(response.username);
-        console.log(response.sessionToken);
-        console.log(response);
+        // console.log(response.username);
+        // console.log(response.sessionToken);
+        // console.log('response', response);
         localStorage.setItem('username', response.username);
         localStorage.setItem('token', response.sessionToken);
+        localStorage.setItem('objectId', response.objectId);
+
 
 //how do I get to the recipe page when logged in? Received the sessionToken?
         // if (response.sessionToken) {

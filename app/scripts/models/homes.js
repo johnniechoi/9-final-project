@@ -21,25 +21,30 @@ var ParseModel = Backbone.Model.extend({
 });
 
 var ParseCollection = Backbone.Collection.extend({
+  whereClause: {},
   parse: function(data){
     return data.results;
   },
-  parseWhere: function(field, className, objectId){
-    this.whereClause = {
-      field: field,
-      '__type': 'Pointer',
-      className: className,
-      objectId: objectId
-    };
+  parseWhere: function(field, value, objectId){
+    // If the third argument is pass in then treat this as a pointer where
+    if(objectId){
+      var className = value;
+      value = {
+        '__type': 'Pointer',
+        className: className,
+        objectId: objectId
+      };
+    }
+
+    this.whereClause[field] = value;
     return this;
   },
   url: function(){
     var url = this.baseUrl;
 
-    if(this.whereClause.field){
-      var field = this.whereClause.field;
-      delete this.whereClause.field;
-      url += '?where={"' + field + '":' + JSON.stringify(this.whereClause) + '}';
+    if(Object.keys(this.whereClause).length != 0){
+      url += '?where=' + JSON.stringify(this.whereClause);
+      this.whereClause = {};
     }
 
     return url;
@@ -72,7 +77,7 @@ var Reno = ParseModel.extend({
 
 var RenoCollection = ParseCollection.extend({
   model: Reno,
-  url: 'https://masterj.herokuapp.com/classes/houseRenovation',
+  baseUrl: 'https://masterj.herokuapp.com/classes/houseRenovation',
   parse: function(data){
     return data.results
   }
@@ -81,5 +86,6 @@ module.exports = {
   House,
   HouseCollection,
   Reno,
-  RenoCollection
+  RenoCollection,
+  ParseModel
 }

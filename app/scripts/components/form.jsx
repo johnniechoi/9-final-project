@@ -67,9 +67,11 @@ var Form = React.createClass({
         </div>
         <div className="col-md-7">
           <h3>Notes</h3>
+          <form onSubmit={this.handleSubmit}>
           <textarea className="form-control textarea" rows="3" type="text" placeholder="This house is great!" ></textarea>
           <button type='submit' className="btn btn-alert">Save Renovation</button>
-        </div>
+          </form>
+      </div>
       </div>
     )
   }
@@ -93,20 +95,42 @@ var RenovationContainer = React.createClass({
     var self = this
     var renoCollection = this.state.renoCollection
     var objectId = this.props.state.house.get('objectId')
-    console.log('objectId:', objectId);
+    // console.log('objectId:', objectId);
     // renoCollection.set({ objectId });
-    renoCollection.fetch().then(function(){
-      self.setState({ renoCollection })
-    })
+    console.log('localStorage', localStorage);
+    renoCollection
+      .parseWhere('user', '_User', localStorage.getItem('objectId'))
+      .parseWhere('house', 'foreclosedData', objectId)
+      .fetch().then(function(){
+        console.log(renoCollection.length);
+        if (renoCollection.length == 0){
+          return
+        }
+        self.setState({ renoCollection })
+      // renoCollectionfetch().then(function(response){
+      //   console.log('inside forclosedData', response);
+      //
+      // })
+      // self.setState({ renoCollection })
+    });
     // console.log(this.state);
   },
   addReno: function(){
     // console.log("addReno:", this.state.renoCollection);
     this.state.renoCollection.add({
-      house: this.props.state.house.get('objectId')
+      house: {
+        '__type': 'Pointer',
+        className: 'foreclosedData',
+        objectId: this.props.state.house.get('objectId')
+      },
+      user: {
+        '__type': 'Pointer',
+        className: '_User',
+        objectId: localStorage.objectId
+      }
     })
     this.setState({ renoCollection: this.state.renoCollection })
-    console.log(this.state);
+    console.log('addReno', this.state);
   },
   saveReno: function(renoData){
     var self = this
