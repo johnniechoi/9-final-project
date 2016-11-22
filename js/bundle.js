@@ -255,11 +255,11 @@ var RenovationContainer = React.createClass({displayName: "RenovationContainer",
     console.log('renoData:', renoData);
     console.log('state:', reno);
 
-    // this.state.renoCollection.each(function (reno) {
-    //   reno.set('estimate', parseInt(reno.get('estimate')))
-    //   reno.save()
-    // })
-    // alert('Data saved!')
+    this.state.renoCollection.each(function (reno) {
+      reno.set('estimate', parseInt(reno.get('estimate')))
+      reno.save()
+    })
+    alert('Data saved!')
 
     // .then(() => {
     //   Backbone.history.navigate('/details/' + his.props.state.house.get('objectId') + "/", {trigger: true});
