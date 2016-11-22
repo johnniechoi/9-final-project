@@ -27,7 +27,7 @@ var FormInput = React.createClass({
     // console.log('props:', this.props.renoCollection)
   },
   render: function(){
-    console.log(this.props);
+    // console.log(this.props);
     var renoCollection = this.props.renoCollection
     // console.log('renoColelction:', renoCollection);
     return (
@@ -44,14 +44,19 @@ var FormInput = React.createClass({
 })
 
 var Form = React.createClass({
+  getInitialState: function(){
+    // console.log('form:', this.props.reno.toJSON())
+    return this.props.reno.toJSON()
+  },
   handleSubmit: function(e){
     e.preventDefault();
     this.props.saveReno(this.props)
-    // console.log("handleSubmit:", this.props);
+    console.log("handleSubmit:", this.props, this.state);
   },
   handleTextArea: function(e){
-    e.prevenDefault();
-
+    var notes = e.target.value;
+    this.setState({notes: notes});
+    console.log('state', this.state)
   },
   render: function(){
     var renoCollection = this.props.renoCollection.models
@@ -67,12 +72,12 @@ var Form = React.createClass({
         <form onSubmit={this.handleSubmit}>
           <div className="col-md-5">
             <h3> Renovation Estimate </h3>
-              {renoCollectionFormset}
-              <button onClick={this.props.addReno} type="button" className="btn btn-success"> Add Renovation</button>
+            {renoCollectionFormset}
+            <button onClick={this.props.addReno} type="button" className="btn btn-success"> Add Renovation</button>
           </div>
           <div className="col-md-7">
             <h3>Notes</h3>
-            <textarea className="form-control textarea" rows="3" type="text" placeholder="This house is great!" ></textarea>
+            <input onChange={this.handleTextArea} name="notes" value={this.state.notes} className="form-control textarea" rows="3" type="text" placeholder="This house is great!" ></input>
             <button type='submit' className="btn btn-alert">Save Renovation</button>
           </div>
         </form>
@@ -101,12 +106,12 @@ var RenovationContainer = React.createClass({
     var objectId = this.props.state.house.get('objectId')
     // console.log('objectId:', objectId);
     // renoCollection.set({ objectId });
-    console.log('localStorage', localStorage);
+    // console.log('localStorage', localStorage);
     renoCollection
       .parseWhere('user', '_User', localStorage.getItem('objectId'))
       .parseWhere('house', 'foreclosedData', objectId)
       .fetch().then(function(){
-        console.log(renoCollection.length);
+        // console.log(renoCollection.length);
         if (renoCollection.length == 0){
           return
         }
@@ -139,14 +144,14 @@ var RenovationContainer = React.createClass({
   saveReno: function(renoData){
     var self = this
     var reno = this.state.renoCollection;
-    // console.log('renoData:', renoData);
+    console.log('renoData:', renoData);
     console.log('state:', reno);
 
-    this.state.renoCollection.each(function (reno) {
-      reno.set('estimate', parseInt(reno.get('estimate')))
-      reno.save()
-    })
-    alert('Data saved!')
+    // this.state.renoCollection.each(function (reno) {
+    //   reno.set('estimate', parseInt(reno.get('estimate')))
+    //   reno.save()
+    // })
+    // alert('Data saved!')
 
     // .then(() => {
     //   Backbone.history.navigate('/details/' + his.props.state.house.get('objectId') + "/", {trigger: true});

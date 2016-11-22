@@ -67,7 +67,8 @@ var HouseCollection = Backbone.Collection.extend({
 var Reno = ParseModel.extend({
   defaults:{
     project: '',
-    estimate: 0
+    estimate: 0,
+    notes: ''
   },
   urlRoot: 'https://masterj.herokuapp.com/classes/houseRenovation',
   // parse: function(data){
