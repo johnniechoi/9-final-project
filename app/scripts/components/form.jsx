@@ -27,6 +27,7 @@ var FormInput = React.createClass({
     // console.log('props:', this.props.renoCollection)
   },
   render: function(){
+    console.log(this.props);
     var renoCollection = this.props.renoCollection
     // console.log('renoColelction:', renoCollection);
     return (
@@ -48,30 +49,33 @@ var Form = React.createClass({
     this.props.saveReno(this.props)
     // console.log("handleSubmit:", this.props);
   },
+  handleTextArea: function(e){
+    e.prevenDefault();
+
+  },
   render: function(){
     var renoCollection = this.props.renoCollection.models
+    var formProps = this.props
     // console.log('renocollection:', renoCollection);
     var renoCollectionFormset = renoCollection.map(function(reno){
       return(
-        <FormInput key={reno.cid} reno={reno} renoCollection={renoCollection} />
+        <FormInput key={reno.cid} reno={reno} renoCollection={renoCollection} formProps={formProps}/>
       )
     })
     return(
       <div className="container">
-        <div className="col-md-5">
-          <h3> Renovation Estimate </h3>
-          <form onSubmit={this.handleSubmit}>
-            {renoCollectionFormset}
-            <button onClick={this.props.addReno} type="button" className="btn btn-success"> Add Renovation</button>
-          </form>
-        </div>
-        <div className="col-md-7">
-          <h3>Notes</h3>
-          <form onSubmit={this.handleSubmit}>
-          <textarea className="form-control textarea" rows="3" type="text" placeholder="This house is great!" ></textarea>
-          <button type='submit' className="btn btn-alert">Save Renovation</button>
-          </form>
-      </div>
+        <form onSubmit={this.handleSubmit}>
+          <div className="col-md-5">
+            <h3> Renovation Estimate </h3>
+              {renoCollectionFormset}
+              <button onClick={this.props.addReno} type="button" className="btn btn-success"> Add Renovation</button>
+          </div>
+          <div className="col-md-7">
+            <h3>Notes</h3>
+            <textarea className="form-control textarea" rows="3" type="text" placeholder="This house is great!" ></textarea>
+            <button type='submit' className="btn btn-alert">Save Renovation</button>
+          </div>
+        </form>
       </div>
     )
   }
@@ -142,7 +146,7 @@ var RenovationContainer = React.createClass({
       reno.set('estimate', parseInt(reno.get('estimate')))
       reno.save()
     })
-
+    alert('Data saved!')
 
     // .then(() => {
     //   Backbone.history.navigate('/details/' + his.props.state.house.get('objectId') + "/", {trigger: true});
