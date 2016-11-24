@@ -13,18 +13,7 @@ var ParseModel = Backbone.Model.extend({
     };
     return pointerObject;
   },
-  save: function(key, val, options){
-    delete this.attributes.createdAt;
-    delete this.attributes.updatedAt;
-    return Backbone.Model.prototype.save.apply(this, arguments);
-  }
-});
-
-var ParseCollection = Backbone.Collection.extend({
   whereClause: {},
-  parse: function(data){
-    return data.results;
-  },
   parseWhere: function(field, value, objectId){
     // If the third argument is pass in then treat this as a pointer where
     if(objectId){
@@ -35,9 +24,20 @@ var ParseCollection = Backbone.Collection.extend({
         objectId: objectId
       };
     }
-
+    // console.log('parsewhre', field);
     this.whereClause[field] = value;
     return this;
+  },
+  save: function(key, val, options){
+    delete this.attributes.createdAt;
+    delete this.attributes.updatedAt;
+    return Backbone.Model.prototype.save.apply(this, arguments);
+  }
+});
+
+var ParseCollection = Backbone.Collection.extend({
+  parse: function(data){
+    return data.results;
   },
   url: function(){
     var url = this.baseUrl;
@@ -46,7 +46,6 @@ var ParseCollection = Backbone.Collection.extend({
       url += '?where=' + JSON.stringify(this.whereClause);
       this.whereClause = {};
     }
-
     return url;
   }
 });
@@ -64,29 +63,56 @@ var HouseCollection = Backbone.Collection.extend({
   }
 })
 
-var Reno = ParseModel.extend({
-  defaults:{
+var Estimate = ParseModel.extend({
+  defaults: {
     project: '',
-    estimate: 0,
-    notes: ''
+    estimateCost: ''
+  }
+})
+
+var EstimateCollection = ParseCollection.extend({
+  model: Estimate,
+  baseUrl: 'https://masterj.herokuapp.com/classes/houseRenovation',
+  parse: function(data){
+    console.log('estimateCollection', data);
+    return data.results
+  }
+})
+
+var Renovation = ParseModel.extend({
+  defaults: {
+    estimate: new EstimateCollection,
+    notes: '',
+    photo: ''
   },
-  urlRoot: 'https://masterj.herokuapp.com/classes/houseRenovation',
+  url: 'https://masterj.herokuapp.com/classes/houseRenovation',
+  save: function(key, val, options){
+    // Convert estimate collection to array for parse
+    this.set('estimate', this.get('estimate'));
+    return ParseModel.prototype.save.apply(this, arguments);
+  },
+  parse: function(data){
+  // Convert estimate array from parse to collection
+  // console.log('renovation before', data.results[0]);
+  data.estimate = new EstimateCollection(data.results[0]);
+  // console.log('renovation after', data.estimate.models[0].toJSON());
+  return data.estimate.models[0].toJSON()
+}
+})
+
+var RenovationCollection = ParseModel.extend({
+  model: Renovation,
+  baseUrl: 'https://masterj.herokuapp.com/classes/houseRenovation',
   // parse: function(data){
   //   return data.results
   // }
 })
 
-var RenoCollection = ParseCollection.extend({
-  model: Reno,
-  baseUrl: 'https://masterj.herokuapp.com/classes/houseRenovation',
-  parse: function(data){
-    return data.results
-  }
-})
 module.exports = {
   House,
   HouseCollection,
-  Reno,
-  RenoCollection,
+  Estimate,
+  EstimateCollection,
+  Renovation,
   ParseModel
 }

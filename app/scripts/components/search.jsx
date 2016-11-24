@@ -81,7 +81,7 @@ var SearchPage = React.createClass({
     }
   },
   render: function(){
-    // console.log('state:', this.state);
+    console.log('state:', this.state);
     return(
       <div>
         <div>
