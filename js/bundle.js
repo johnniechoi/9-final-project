@@ -8,31 +8,8 @@ var NavBar = require('../../template.jsx').NavBar;
 var House = require('../models/homes.js').House;
 var RenovationContainer = require('./form.jsx').RenovationContainer;
 var RenoCollection = require('../models/homes.js').RenoCollection;
-var FileModel = require('../models/filesupload.js').File
 
 var DisplayDetail = React.createClass({displayName: "DisplayDetail",
-  handlePicture: function(e){
-
-    $('#app').on('change', function(event){
-      event.preventDefault();
-      console.log($("#pic")[0]);
-      var picture = $("#pic")[0].files[0];
-    //
-      console.log($("#pic")[0]);
-
-      var attachedFile = e.target.files[0];
-      this.setState({profilePic: attachedFile});
-
-      var file = new FileModel();
-      file.set('name', picture.name);
-      file.set('data', picture);
-      file.save().done(function(){
-        console.log(file);
-        // alert(file.get('url'));
-      });
-    });
-
-  },
   render: function(){
     var house = this.props.house
     // console.log(house);
@@ -40,15 +17,11 @@ var DisplayDetail = React.createClass({displayName: "DisplayDetail",
     var zestimate = house.get('amount')?parseFloat(house.get('amount').replace(',', '')):null
     var difference = zestimate - foreclosedValue;
     // console.log(difference);
-
     return (
       React.createElement("div", {className: "container"}, 
         React.createElement("div", {className: "col-md-6"}, 
           React.createElement("h1", null, house.get('Address')), 
-          React.createElement("img", {src: "https://maps.googleapis.com/maps/api/streetview?channel=ldp-publicrecord&location=512+Sellwood+Cir%2C+Simpsonville%2C+SC+29680&size=665x441&client=gme-redfin&signature=raAoVuSezjKPjkGNFm3W_MTYDsk="}), 
-          React.createElement("form", null, 
-            React.createElement("input", {onChange: this.handlePicture, type: "file"})
-          )
+          React.createElement("img", {src: "https://maps.googleapis.com/maps/api/streetview?channel=ldp-publicrecord&location=512+Sellwood+Cir%2C+Simpsonville%2C+SC+29680&size=665x441&client=gme-redfin&signature=raAoVuSezjKPjkGNFm3W_MTYDsk="})
         ), 
         React.createElement("div", {className: "col-md-6 detail-listing"}, 
           React.createElement("ol", {className: "rectangle-list"}, 
@@ -92,7 +65,7 @@ var DetailsPage = React.createClass({displayName: "DetailsPage",
       React.createElement("div", null, 
         React.createElement(NavBar, null), 
         React.createElement("div", {className: "container"}, 
-          React.createElement(DisplayDetail, {house: this.state.house}), 
+          React.createElement(DisplayDetail, {uploadPicture: this.uploadPicture, house: this.state.house}), 
           React.createElement(RenovationContainer, {state: this.state})
         )
       )
@@ -104,47 +77,54 @@ module.exports = {
   DetailsPage: DetailsPage
 }
 
-},{"../../template.jsx":11,"../models/filesupload.js":6,"../models/homes.js":7,"./form.jsx":2,"backbone":12,"jquery":43,"react":192}],2:[function(require,module,exports){
+},{"../../template.jsx":11,"../models/homes.js":7,"./form.jsx":2,"backbone":12,"jquery":43,"react":192}],2:[function(require,module,exports){
 "use strict";
 var $ = require('jquery');
+var _ = require('underscore')
 var React = require('react');
 var Backbone = require('backbone');
 
 var NavBar = require('../../template.jsx').NavBar;
 var House = require('../models/homes.js').House;
-var Reno = require('../models/homes.js').Reno;
-var RenoCollection = require('../models/homes.js').RenoCollection;
+var Estimate = require('../models/homes.js').Estimate;
+var EstimateCollection = require('../models/homes.js').EstimateCollection;
+var Renovation = require('../models/homes.js').Renovation;
+var RenovationCollection = require('../models/homes.js').RenovationCollection;
+var FileModel = require('../models/filesupload.js').File
+
 
 var FormInput = React.createClass({displayName: "FormInput",
   getInitialState: function(){
-    // console.log('form:', this.props.reno.toJSON())
-    return this.props.reno.toJSON()
+    console.log('getinitial', this.props.formProps.reno.get('estimate'));
+    return this.props.formProps.reno.toJSON()
   },
   componentWillReceiveProps: function(newProps){
-    // console.log('newprops', newProps.reno.toJSON());
-    this.setState(newProps.reno.toJSON())
+    // console.log('componentWill', newProps.formProps.reno.toJSON());
+    this.setState(newProps.formProps.reno.toJSON())
   },
   handleInputChange: function(e){
     var renoField = e.target;
     var newState = {};
     newState[renoField.name] = renoField.value;
-    // console.log('handleinputchange:', this.props.reno);
-    // console.log(renoField.name,':', renoField.value);
+    // console.log('newState,', newState);
     this.setState(newState);
-    this.props.reno.set(renoField.name, renoField.value)
-    // console.log('props:', this.props.renoCollection)
+    // console.log('state', this.st);
+    var estimateCost = this.state.estimateCost
+    var project = this.state.project
+    this.props.formProps.addReno({estimateCost: estimateCost, project: project})
+    // console.log('estimate', this.props.formProps.reno.get('estimate')[0]);
+    // this.props.formProps.reno.get('estimate').push(newState)
   },
   render: function(){
-    // console.log(this.props);
-    var renoCollection = this.props.renoCollection
-    // console.log('renoColelction:', renoCollection);
+    var renoCollection = this.state
+    // console.log('FormInput', renoCollection);
     return (
       React.createElement("div", null, 
         React.createElement("div", {className: "form-group"}, 
           React.createElement("input", {onChange: this.handleInputChange, value: this.state.project, type: "text", name: "project", id: "project", className: "form-control", placeholder: "Project Name!"})
         ), 
         React.createElement("div", {className: "form-group"}, 
-          React.createElement("input", {onChange: this.handleInputChange, value: this.state.estimate, type: "text", name: "estimate", id: "estimate", className: "form-control", placeholder: "Estimate"})
+          React.createElement("input", {onChange: this.handleInputChange, value: this.state.estimateCost, type: "text", name: "estimateCost", id: "estimate", className: "form-control", placeholder: "Estimate"})
         )
       )
     )
@@ -153,40 +133,48 @@ var FormInput = React.createClass({displayName: "FormInput",
 
 var Form = React.createClass({displayName: "Form",
   getInitialState: function(){
-    // console.log('form:', this.props.reno.toJSON())
     return this.props.reno.toJSON()
   },
   handleSubmit: function(e){
     e.preventDefault();
-    this.props.saveReno(this.props)
-    console.log("handleSubmit:", this.props, this.state);
+    this.props.saveReno(this.props, this.state.notes)
+    // console.log("handleSubmit:", this.props, this.state);
   },
   handleTextArea: function(e){
     var notes = e.target.value;
     this.setState({notes: notes});
     console.log('state', this.state)
   },
+  handlePicture: function(e){
+    console.log('handlePicture');
+    e.preventDefault();
+    console.log('handlePictureProps', this.props);
+    var attachedPicture = e.target.files[0];
+    this.props.uploadPicture(attachedPicture);
+  },
   render: function(){
-    var renoCollection = this.props.renoCollection.models
     var formProps = this.props
-    // console.log('renocollection:', renoCollection);
-    var renoCollectionFormset = renoCollection.map(function(reno){
-      return(
-        React.createElement(FormInput, {key: reno.cid, reno: reno, renoCollection: renoCollection, formProps: formProps})
-      )
-    })
+    var estimateCollection = this.props.reno.get('estimate')
+    // console.log('estimateCollection:', estimateCollection);
+    // var renoCollectionFormset = estimateCollection.map(function(reno){
+    //   return(
+    //     <FormInput key={reno.cid} formProps={formProps}/>
+    //   )
+    // })
     return(
       React.createElement("div", {className: "container"}, 
-        React.createElement("form", {onSubmit: this.handleSubmit}, 
+        React.createElement("form", {onSubmit: this.handleSubmit, method: "POST", encType: "multipart/form-data", action: "/dist/"}, 
           React.createElement("div", {className: "col-md-5"}, 
             React.createElement("h3", null, " Renovation Estimate "), 
-            renoCollectionFormset, 
+          /*    {renoCollectionFormset}  */ 
             React.createElement("button", {onClick: this.props.addReno, type: "button", className: "btn btn-success"}, " Add Renovation")
           ), 
           React.createElement("div", {className: "col-md-7"}, 
             React.createElement("h3", null, "Notes"), 
-            React.createElement("input", {onChange: this.handleTextArea, name: "notes", value: this.state.notes, className: "form-control textarea", rows: "3", type: "text", placeholder: "This house is great!"}), 
-            React.createElement("button", {type: "submit", className: "btn btn-alert"}, "Save Renovation")
+            React.createElement("textarea", {onChange: this.handleTextArea, name: "notes", value: this.state.notes, className: "form-control textarea", rows: "3", type: "text", placeholder: "This house is great!"}), 
+            React.createElement("button", {type: "submit", className: "btn btn-alert"}, "Save Renovation"), 
+            React.createElement("img", {src: this.props.reno.get('photo')}), 
+          React.createElement("input", {onChange: this.handlePicture, type: "file"})
           )
         )
       )
@@ -196,10 +184,10 @@ var Form = React.createClass({displayName: "Form",
 
 var RenovationContainer = React.createClass({displayName: "RenovationContainer",
   getInitialState: function(){
-    // console.log('form:', this.props.state.house.get('objectId'));
     return {
-      reno: new Reno(),
-      renoCollection: new RenoCollection()
+      reno: new Renovation(),
+      // need to use the model because thats all I'm going through
+      // renoCollection: new RenovationCollection()
     }
   },
   componentWillMount: function(){
@@ -210,31 +198,32 @@ var RenovationContainer = React.createClass({displayName: "RenovationContainer",
   },
   getHouse: function(){
     var self = this
-    var renoCollection = this.state.renoCollection
+    var reno = this.state.reno
     var objectId = this.props.state.house.get('objectId')
-    // console.log('objectId:', objectId);
-    // renoCollection.set({ objectId });
     // console.log('localStorage', localStorage);
-    renoCollection
-      .parseWhere('user', '_User', localStorage.getItem('objectId'))
+    // console.log("getHouse", objectId);
+    reno
+      .parseWhere('owner', '_User', localStorage.getItem('objectId'))
       .parseWhere('house', 'foreclosedData', objectId)
-      .fetch().then(function(){
-        // console.log(renoCollection.length);
-        if (renoCollection.length == 0){
+      .fetch().then(function(data){
+        console.log('inside fetch', self.state);
+        if (reno.length == 0){
           return
         }
-        self.setState({ renoCollection })
-      // renoCollectionfetch().then(function(response){
-      //   console.log('inside forclosedData', response);
-      //
-      // })
-      // self.setState({ renoCollection })
+        // self.state.reno.add({data})
     });
-    // console.log(this.state);
+    console.log('reno', reno);
   },
-  addReno: function(){
-    // console.log("addReno:", this.state.renoCollection);
-    this.state.renoCollection.add({
+  addReno: function(estimate){
+    var estimate = this.state.reno.get('estimate')
+    console.log('addReno', estimate);
+    estimate.add([{}])
+    this.setState({ reno: this.state.reno})
+  },
+  saveReno: function(props, state){
+    var self = this
+    console.log('saveReno', this.state.reno);
+    this.state.reno.set({
       house: {
         '__type': 'Pointer',
         className: 'foreclosedData',
@@ -244,32 +233,41 @@ var RenovationContainer = React.createClass({displayName: "RenovationContainer",
         '__type': 'Pointer',
         className: '_User',
         objectId: localStorage.objectId
-      }
+      },
     })
-    this.setState({ renoCollection: this.state.renoCollection })
-    console.log('addReno', this.state);
+    this.setState({ reno: this.state.reno })
+    console.log('before save', this.state.reno);
+    this.state.reno.save()
+    // alert('Data saved!')
   },
-  saveReno: function(renoData){
-    var self = this
-    var reno = this.state.renoCollection;
-    console.log('renoData:', renoData);
-    console.log('state:', reno);
-
-    this.state.renoCollection.each(function (reno) {
-      reno.set('estimate', parseInt(reno.get('estimate')))
-      reno.save()
-    })
-    alert('Data saved!')
-
-    // .then(() => {
-    //   Backbone.history.navigate('/details/' + his.props.state.house.get('objectId') + "/", {trigger: true});
-    // });
+  uploadPicture: function(picture){
+    var self = this;
+    var file = new FileModel();
+    // console.log(file);
+    file.set('name', picture.name);
+    file.set('data', picture);
+    file.save().done(function(response){
+      var renovation = self.state.reno;
+      renovation.set('photo', file.get('url'));
+      renovation.save();
+      console.warn('photo saved');
+      self.setState({reno: renovation});
+    });
   },
   render: function(){
-    // console.log(this.state);
+    console.log('container render', this.state.reno);
     return (
       React.createElement("div", {className: "form-inline container well"}, 
-        React.createElement(Form, {reno: this.state.reno, renoCollection: this.state.renoCollection, addReno: this.addReno, saveReno: this.saveReno})
+
+        React.createElement(Form, {
+          reno: this.state.reno, 
+          renoCollection: this.state.renoCollection, 
+          addReno: this.addReno, 
+          addNote: this.addNote, 
+          saveReno: this.saveReno, 
+          uploadPicture: this.uploadPicture}
+        )
+
       )
     )
   }
@@ -279,7 +277,7 @@ module.exports = {
   RenovationContainer
 }
 
-},{"../../template.jsx":11,"../models/homes.js":7,"backbone":12,"jquery":43,"react":192}],3:[function(require,module,exports){
+},{"../../template.jsx":11,"../models/filesupload.js":6,"../models/homes.js":7,"backbone":12,"jquery":43,"react":192,"underscore":193}],3:[function(require,module,exports){
 "use strict";
 var React = require('react');
 var $ = require('jquery')
@@ -301,7 +299,7 @@ var response = function setHeader(response){
   });
 }
 
-  console.log(localStorage.user);
+  // console.log(localStorage.user);
 
 const customStyles = {
  content : {
@@ -571,7 +569,7 @@ var SearchPage = React.createClass({displayName: "SearchPage",
     }
   },
   render: function(){
-    // console.log('state:', this.state);
+    console.log('state:', this.state);
     return(
       React.createElement("div", null, 
         React.createElement("div", null, 
@@ -674,18 +672,7 @@ var ParseModel = Backbone.Model.extend({
     };
     return pointerObject;
   },
-  save: function(key, val, options){
-    delete this.attributes.createdAt;
-    delete this.attributes.updatedAt;
-    return Backbone.Model.prototype.save.apply(this, arguments);
-  }
-});
-
-var ParseCollection = Backbone.Collection.extend({
   whereClause: {},
-  parse: function(data){
-    return data.results;
-  },
   parseWhere: function(field, value, objectId){
     // If the third argument is pass in then treat this as a pointer where
     if(objectId){
@@ -696,9 +683,20 @@ var ParseCollection = Backbone.Collection.extend({
         objectId: objectId
       };
     }
-
+    // console.log('parsewhre', field);
     this.whereClause[field] = value;
     return this;
+  },
+  save: function(key, val, options){
+    delete this.attributes.createdAt;
+    delete this.attributes.updatedAt;
+    return Backbone.Model.prototype.save.apply(this, arguments);
+  }
+});
+
+var ParseCollection = Backbone.Collection.extend({
+  parse: function(data){
+    return data.results;
   },
   url: function(){
     var url = this.baseUrl;
@@ -707,7 +705,6 @@ var ParseCollection = Backbone.Collection.extend({
       url += '?where=' + JSON.stringify(this.whereClause);
       this.whereClause = {};
     }
-
     return url;
   }
 });
@@ -725,30 +722,61 @@ var HouseCollection = Backbone.Collection.extend({
   }
 })
 
-var Reno = ParseModel.extend({
-  defaults:{
+var Estimate = ParseModel.extend({
+  defaults: {
     project: '',
-    estimate: 0,
-    notes: ''
+    estimateCost: ''
+  }
+})
+
+var EstimateCollection = ParseCollection.extend({
+  model: Estimate,
+  // baseUrl: 'https://masterj.herokuapp.com/classes/houseRenovation',
+  // parse: function(data){
+  //   console.log('estimateCollection', data);
+  //   return data.results
+  // }
+})
+
+var Renovation = ParseModel.extend({
+  defaults: {
+    estimate: new EstimateCollection(),
+    notes: '',
+    photo: ''
   },
-  urlRoot: 'https://masterj.herokuapp.com/classes/houseRenovation',
+  url: 'https://masterj.herokuapp.com/classes/houseRenovation',
+  save: function(key, val, options){
+    // Convert estimate collection to array for parse
+    // console.log('inside renovation Model', this.get('estimate').toJSON());
+    this.set('estimate', this.get('estimate').toJSON());
+    return ParseModel.prototype.save.apply(this, arguments);
+  },
+  parse: function(data){
+  // Convert estimate array from parse to collection
+  // console.log(data);
+  var estimate = this.set('estimate', new EstimateCollection(data.results[0].estimate))
+  console.log('renovation model', data.results[0].estimate);
+  console.log('renovation model index', data.results);
+  // this.set('estimate', new EstimateCollection(data.results.estimate));
+  return data.results
+  }
+})
+
+var RenovationCollection = ParseCollection.extend({
+  model: Renovation,
+  baseUrl: 'https://masterj.herokuapp.com/classes/houseRenovation',
   // parse: function(data){
   //   return data.results
   // }
 })
 
-var RenoCollection = ParseCollection.extend({
-  model: Reno,
-  baseUrl: 'https://masterj.herokuapp.com/classes/houseRenovation',
-  parse: function(data){
-    return data.results
-  }
-})
 module.exports = {
   House,
   HouseCollection,
-  Reno,
-  RenoCollection,
+  Estimate,
+  EstimateCollection,
+  Renovation,
+  RenovationCollection,
   ParseModel
 }
 
