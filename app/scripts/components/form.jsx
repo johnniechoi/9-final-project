@@ -8,6 +8,7 @@ var House = require('../models/homes.js').House;
 var Estimate = require('../models/homes.js').Estimate;
 var EstimateCollection = require('../models/homes.js').EstimateCollection;
 var Renovation = require('../models/homes.js').Renovation;
+var RenovationCollection = require('../models/homes.js').RenovationCollection;
 var FileModel = require('../models/filesupload.js').File
 
 
@@ -105,7 +106,7 @@ var RenovationContainer = React.createClass({
     return {
       reno: new Renovation(),
       // need to use the model because thats all I'm going through
-      // renoCollection: new RenoCollection()
+      // renoCollection: new RenovationCollection()
     }
   },
   componentWillMount: function(){
@@ -119,23 +120,22 @@ var RenovationContainer = React.createClass({
     var reno = this.state.reno
     var objectId = this.props.state.house.get('objectId')
     // console.log('localStorage', localStorage);
-    // console.log("getHouse", reno);
+    // console.log("getHouse", objectId);
     reno
-      .parseWhere('user', '_User', localStorage.getItem('objectId'))
+      .parseWhere('owner', '_User', localStorage.getItem('objectId'))
       .parseWhere('house', 'foreclosedData', objectId)
       .fetch().then(function(data){
+        console.log('inside fetch', self.state);
         if (reno.length == 0){
           return
         }
-        // console.log('inside renovation', data);
-        self.setState({ reno })
+        // self.state.reno.add({data})
     });
-    // console.log('reno', this.state.reno);
+    console.log('reno', reno);
   },
   addReno: function(estimate){
     var estimate = this.state.reno.get('estimate')
     console.log('addReno', estimate);
-    // console.warn(typeof estimate)
     estimate.add([{}])
     this.setState({ reno: this.state.reno})
   },
@@ -154,10 +154,10 @@ var RenovationContainer = React.createClass({
         objectId: localStorage.objectId
       },
     })
-    // this.setState({ reno: this.state.reno })
-    console.log('saveReno', this.state.reno);
+    this.setState({ reno: this.state.reno })
+    console.log('before save', this.state.reno);
     this.state.reno.save()
-    alert('Data saved!')
+    // alert('Data saved!')
   },
   uploadPicture: function(picture){
     var self = this;
@@ -174,7 +174,7 @@ var RenovationContainer = React.createClass({
     });
   },
   render: function(){
-    console.log('container render', this.state);
+    console.log('container render', this.state.reno);
     return (
       <div className="form-inline container well">
 

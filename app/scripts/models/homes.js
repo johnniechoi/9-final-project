@@ -72,35 +72,38 @@ var Estimate = ParseModel.extend({
 
 var EstimateCollection = ParseCollection.extend({
   model: Estimate,
-  baseUrl: 'https://masterj.herokuapp.com/classes/houseRenovation',
-  parse: function(data){
-    console.log('estimateCollection', data);
-    return data.results
-  }
+  // baseUrl: 'https://masterj.herokuapp.com/classes/houseRenovation',
+  // parse: function(data){
+  //   console.log('estimateCollection', data);
+  //   return data.results
+  // }
 })
 
 var Renovation = ParseModel.extend({
   defaults: {
-    estimate: new EstimateCollection,
+    estimate: new EstimateCollection(),
     notes: '',
     photo: ''
   },
   url: 'https://masterj.herokuapp.com/classes/houseRenovation',
   save: function(key, val, options){
     // Convert estimate collection to array for parse
-    this.set('estimate', this.get('estimate'));
+    // console.log('inside renovation Model', this.get('estimate').toJSON());
+    this.set('estimate', this.get('estimate').toJSON());
     return ParseModel.prototype.save.apply(this, arguments);
   },
   parse: function(data){
   // Convert estimate array from parse to collection
-  // console.log('renovation before', data.results[0]);
-  data.estimate = new EstimateCollection(data.results[0]);
-  // console.log('renovation after', data.estimate.models[0].toJSON());
-  return data.estimate.models[0].toJSON()
-}
+  // console.log(data);
+  var estimate = this.set('estimate', new EstimateCollection(data.results[0].estimate))
+  console.log('renovation model', data.results[0].estimate);
+  console.log('renovation model index', data.results);
+  // this.set('estimate', new EstimateCollection(data.results.estimate));
+  return data.results
+  }
 })
 
-var RenovationCollection = ParseModel.extend({
+var RenovationCollection = ParseCollection.extend({
   model: Renovation,
   baseUrl: 'https://masterj.herokuapp.com/classes/houseRenovation',
   // parse: function(data){
@@ -114,5 +117,6 @@ module.exports = {
   Estimate,
   EstimateCollection,
   Renovation,
+  RenovationCollection,
   ParseModel
 }
