@@ -14,29 +14,25 @@ var FileModel = require('../models/filesupload.js').File
 
 var FormInput = React.createClass({
   getInitialState: function(){
-    console.log('getinitial', this.props.formProps.reno.get('estimate'));
-    return this.props.formProps.reno.toJSON()
+    return this.props.estimate.toJSON();
   },
+
   componentWillReceiveProps: function(newProps){
     // console.log('componentWill', newProps.formProps.reno.toJSON());
-    this.setState(newProps.formProps.reno.toJSON())
+    this.setState(newProps.estimate.toJSON())
   },
+
   handleInputChange: function(e){
     var renoField = e.target;
     var newState = {};
+    var estimateModel = this.props.estimate;
+
     newState[renoField.name] = renoField.value;
-    // console.log('newState,', newState);
+
+    estimateModel.set(renoField.name, renoField.value);
     this.setState(newState);
-    // console.log('state', this.st);
-    var estimateCost = this.state.estimateCost
-    var project = this.state.project
-    this.props.formProps.addReno({estimateCost: estimateCost, project: project})
-    // console.log('estimate', this.props.formProps.reno.get('estimate')[0]);
-    // this.props.formProps.reno.get('estimate').push(newState)
   },
   render: function(){
-    var renoCollection = this.state
-    // console.log('FormInput', renoCollection);
     return (
       <div>
         <div className="form-group">
@@ -52,18 +48,25 @@ var FormInput = React.createClass({
 
 var Form = React.createClass({
   getInitialState: function(){
-    return this.props.reno.toJSON()
+    return this.props.reno.toJSON();
+  },
+  componentWillReceiveProps: function(){
+    this.setState({notes: this.props.reno.get('notes')})
   },
   handleSubmit: function(e){
     e.preventDefault();
-    this.props.saveReno(this.props, this.state.notes)
-    // console.log("handleSubmit:", this.props, this.state);
+
+    var renovation = this.props.reno;
+    renovation.set('notes', this.state.notes);
+    this.props.saveReno(renovation.toJSON());
   },
+
   handleTextArea: function(e){
     var notes = e.target.value;
     this.setState({notes: notes});
-    console.log('state', this.state)
+    console.log('notes', this.state);
   },
+
   handlePicture: function(e){
     console.log('handlePicture');
     e.preventDefault();
@@ -71,29 +74,37 @@ var Form = React.createClass({
     var attachedPicture = e.target.files[0];
     this.props.uploadPicture(attachedPicture);
   },
+
+  handleClick: function(e){
+    e.preventDefault();
+    var favorite = this.props;
+    //get the objectId from the house and send it through!
+    this.props.setFavorite();
+    console.log('favorite', favorite);
+  },
   render: function(){
     var formProps = this.props
     var estimateCollection = this.props.reno.get('estimate')
     // console.log('estimateCollection:', estimateCollection);
-    // var renoCollectionFormset = estimateCollection.map(function(reno){
-    //   return(
-    //     <FormInput key={reno.cid} formProps={formProps}/>
-    //   )
-    // })
+    var renoCollectionFormset = estimateCollection.map(function(estimate){
+      return(
+        <FormInput key={estimate.cid} estimate={estimate}/>
+      )
+    })
     return(
       <div className="container">
         <form onSubmit={this.handleSubmit} method="POST" encType="multipart/form-data" action="/dist/">
           <div className="col-md-5">
             <h3> Renovation Estimate </h3>
-          {/*    {renoCollectionFormset}  */ }
+            {renoCollectionFormset}
             <button onClick={this.props.addReno} type="button" className="btn btn-success"> Add Renovation</button>
           </div>
           <div className="col-md-7">
             <h3>Notes</h3>
             <textarea onChange={this.handleTextArea} name="notes" value={this.state.notes} className="form-control textarea" rows="3" type="text" placeholder="This house is great!" ></textarea>
-            <button type='submit' className="btn btn-alert">Save Renovation</button>
             <img src={this.props.reno.get('photo')}/>
-          <input onChange={this.handlePicture} type="file" />
+            <input onChange={this.handlePicture} type="file" />
+            <button type='submit' className="btn btn-alert">Save Renovation</button> <button className='btn btn-success' onClick={this.handleClick}>favorite</button>
           </div>
         </form>
       </div>
@@ -106,7 +117,7 @@ var RenovationContainer = React.createClass({
     return {
       reno: new Renovation(),
       // need to use the model because thats all I'm going through
-      // renoCollection: new RenovationCollection()
+      house: new House()
     }
   },
   componentWillMount: function(){
@@ -116,48 +127,61 @@ var RenovationContainer = React.createClass({
     this.getHouse();
   },
   getHouse: function(){
-    var self = this
-    var reno = this.state.reno
-    var objectId = this.props.state.house.get('objectId')
-    // console.log('localStorage', localStorage);
-    // console.log("getHouse", objectId);
-    reno
-      .parseWhere('owner', '_User', localStorage.getItem('objectId'))
-      .parseWhere('house', 'foreclosedData', objectId)
+    var self = this;
+    var houseId = this.props.house.get('objectId');
+
+    var renovationCollection = new RenovationCollection();
+
+    renovationCollection
+      .parseWhere('user', '_User', localStorage.getItem('objectId'))
+      .parseWhere('house', 'foreclosedData', houseId)
       .fetch().then(function(data){
-        console.log('inside fetch', self.state);
-        if (reno.length == 0){
-          return
+        // Get the renovation model
+
+        var reno = renovationCollection.shift();
+
+        if (reno){
+          self.setState({reno: reno})
         }
-        // self.state.reno.add({data})
     });
-    console.log('reno', reno);
   },
   addReno: function(estimate){
     var estimate = this.state.reno.get('estimate')
-    console.log('addReno', estimate);
-    estimate.add([{}])
-    this.setState({ reno: this.state.reno})
+
+    estimate.add([{}]);
+    this.setState({reno: this.state.reno});
   },
-  saveReno: function(props, state){
+
+  saveReno: function(renovationData){
     var self = this
-    console.log('saveReno', this.state.reno);
-    this.state.reno.set({
+    var renovation = this.state.reno;
+
+    // set all the form data to the model
+    renovation.set(renovationData)
+
+    // Set pointers
+    renovation.set({
       house: {
         '__type': 'Pointer',
         className: 'foreclosedData',
-        objectId: this.props.state.house.get('objectId')
+        objectId: this.props.house.get('objectId')
       },
       user: {
         '__type': 'Pointer',
         className: '_User',
         objectId: localStorage.objectId
       },
-    })
-    this.setState({ reno: this.state.reno })
-    console.log('before save', this.state.reno);
-    this.state.reno.save()
-    // alert('Data saved!')
+    });
+
+    console.log('inside save', this.state);
+
+    // Save renovation record
+    renovation.save().then(function(){
+      renovation.fetch().then(() =>{
+        self.setState({reno: renovation});
+      });
+    });
+    // alert('This page has been saved!')
   },
   uploadPicture: function(picture){
     var self = this;
@@ -169,15 +193,22 @@ var RenovationContainer = React.createClass({
       var renovation = self.state.reno;
       renovation.set('photo', file.get('url'));
       renovation.save();
-      console.warn('photo saved');
       self.setState({reno: renovation});
     });
   },
+  setFavorite: function(saved){
+    var house = this.props.house.get('objectId');
+    var reno = this.state.reno
+    console.log('setfavorite', reno);
+
+    var currentUser = localStorage.objectId
+    reno.set('saved', {"__op": "AddRelation", "objects": [ {__type: "Pointer", className: "_User", objectId: currentUser}]});
+    reno.save();
+  },
   render: function(){
-    console.log('container render', this.state.reno);
+    // console.log('container render', this.state.reno);
     return (
       <div className="form-inline container well">
-
         <Form
           reno={this.state.reno}
           renoCollection={this.state.renoCollection}
@@ -185,8 +216,8 @@ var RenovationContainer = React.createClass({
           addNote={this.addNote}
           saveReno={this.saveReno}
           uploadPicture={this.uploadPicture}
+          setFavorite={this.setFavorite}
         />
-
       </div>
     )
   }

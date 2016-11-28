@@ -126,3 +126,26 @@
 //    "SoldAmount": ""
 //  }
 //  }
+
+
+// {"results":
+// [{"objectId":"hpa5YdrajZ","estimate":[{"project":"","estimateCost":""},{"project":"","estimateCost":""}],
+// "notes":"",
+// "photo":"",
+// "house":{"__type":"Pointer","className":"foreclosedData","objectId":"7C0BdCGRW6"},
+// "user":{"__type":"Pointer","className":"_User","objectId":"pauiIJQg9y"},
+// "createdAt":"2016-11-26T21:33:26.129Z",
+// "updatedAt":"2016-11-26T21:33:26.129Z",
+// "saved":{"__type":"Relation","className":"_User"}},
+// {"objectId":"7DlRIg3FwO","estimate":[],"notes":"","photo":"http://masterj.herokuapp.com/files/masterj/076b8bf6f1e8632a46742799202fa567_parrot.gif",
+// "results":[{"objectId":"hpa5YdrajZ","estimate":[{"project":"","estimateCost":""},{"project":"","estimateCost":""}],
+// "notes":"",
+// "photo":"",
+// "house":{"__type":"Pointer","className":"foreclosedData","objectId":"7C0BdCGRW6"},
+// "user":{"__type":"Pointer","className":"_User","objectId":"pauiIJQg9y"},
+// "createdAt":"2016-11-26T21:33:26.129Z",
+// "updatedAt":"2016-11-26T21:33:26.129Z",
+// "saved":{"__type":"Relation","className":"_User"}}],
+// "createdAt":"2016-11-26T21:57:00.765Z",
+// "updatedAt":"2016-11-26T21:57:00.765Z",
+// "saved":{"__type":"Relation","className":"_User"}}]}

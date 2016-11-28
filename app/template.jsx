@@ -13,7 +13,7 @@ var NavBar = React.createClass({
             <ul className="nav navbar-nav">
               <li className=""><a href="#search/">Find</a></li>
               {/*Add for Form for the recipes!*/}
-              <li><a href="#recipe/">Saved Houses</a></li>
+              <li><a href="#saved/">Saved Houses</a></li>
               {/*see a list of all the great receipes on the API!*/}
               <li><a href="#">Login</a></li>
             </ul>

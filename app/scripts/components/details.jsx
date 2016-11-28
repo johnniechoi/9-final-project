@@ -6,6 +6,8 @@ var NavBar = require('../../template.jsx').NavBar;
 var House = require('../models/homes.js').House;
 var RenovationContainer = require('./form.jsx').RenovationContainer;
 var RenoCollection = require('../models/homes.js').RenoCollection;
+var Renovation = require('../models/homes.js').Renovation;
+
 
 var DisplayDetail = React.createClass({
   render: function(){
@@ -54,8 +56,14 @@ var DetailsPage = React.createClass({
     house.set({ objectId })
     house.fetch().then(function(){
       self.setState({ house })
-      // console.log(house.get('amount'));
     })
+    var renovation = new Renovation();
+    renovation.fetch().then(function(data){
+      console.log(data);
+    })
+  },
+  photo: function(data){
+    console.log('data', data);
   },
   render: function(){
     // console.log('details state:', this.state);
@@ -63,8 +71,8 @@ var DetailsPage = React.createClass({
       <div>
         <NavBar/>
         <div className="container">
-          <DisplayDetail uploadPicture={this.uploadPicture} house={this.state.house}/>
-          <RenovationContainer state={this.state}/>
+          <DisplayDetail photo={this.photo} house={this.state.house}/>
+          <RenovationContainer house={this.state.house}/>
         </div>
       </div>
     )
