@@ -17,6 +17,10 @@ var FormInput = React.createClass({
     return this.props.estimate.toJSON();
   },
 
+  // componentWillMount: function(){
+  //   console.log(this.props);
+  // },
+
   componentWillReceiveProps: function(newProps){
     // console.log('componentWill', newProps.formProps.reno.toJSON());
     this.setState(newProps.estimate.toJSON())
@@ -33,6 +37,8 @@ var FormInput = React.createClass({
     this.setState(newState);
   },
   render: function(){
+    var self = this
+    var estimate = this.props.estimate
     return (
       <div>
         <div className="form-group">
@@ -40,6 +46,7 @@ var FormInput = React.createClass({
         </div>
         <div className="form-group">
           <input onChange={this.handleInputChange} value={this.state.estimateCost} type="text" name="estimateCost" id='estimate' className="form-control" placeholder="Estimate" ></input>
+          <button onClick={function(){self.props.deleteEstimate(estimate)}}>X</button>
         </div>
       </div>
     )
@@ -50,6 +57,7 @@ var Form = React.createClass({
   getInitialState: function(){
     return this.props.reno.toJSON();
   },
+
   componentWillReceiveProps: function(){
     this.setState({notes: this.props.reno.get('notes')})
   },
@@ -64,47 +72,54 @@ var Form = React.createClass({
   handleTextArea: function(e){
     var notes = e.target.value;
     this.setState({notes: notes});
-    console.log('notes', this.state);
   },
 
   handlePicture: function(e){
     console.log('handlePicture');
     e.preventDefault();
-    console.log('handlePictureProps', this.props);
     var attachedPicture = e.target.files[0];
+    console.log(attachedPicture);
     this.props.uploadPicture(attachedPicture);
   },
 
-  handleClick: function(e){
+  handleFavorite: function(e){
     e.preventDefault();
     var favorite = this.props;
-    //get the objectId from the house and send it through!
     this.props.setFavorite();
-    console.log('favorite', favorite);
+  },
+  handleDeleteFavorite: function(e){
+    e.preventDefault();
+    var favorite = this.props;
+    this.props.deleteFavorite();
   },
   render: function(){
+    var self = this
     var formProps = this.props
+    // console.log(formProps);
     var estimateCollection = this.props.reno.get('estimate')
-    // console.log('estimateCollection:', estimateCollection);
+    var total = estimateCollection.reduce(function(total, estimate){
+      // console.log(estimate.get('estimateCost'))
+      return total + parseFloat(estimate.get('estimateCost'))
+    },0)
     var renoCollectionFormset = estimateCollection.map(function(estimate){
-      return(
-        <FormInput key={estimate.cid} estimate={estimate}/>
-      )
+      return <FormInput key={estimate.cid} estimate={estimate} deleteEstimate={formProps.deleteEstimate} />
     })
     return(
-      <div className="container">
-        <form onSubmit={this.handleSubmit} method="POST" encType="multipart/form-data" action="/dist/">
-          <div className="col-md-5">
+      <div>
+        <form className="col-md-12 " onSubmit={this.handleSubmit} method="POST" encType="multipart/form-data" action="/dist/">
+          <div className="col-md-6">
             <h3> Renovation Estimate </h3>
             {renoCollectionFormset}
-            <button onClick={this.props.addReno} type="button" className="btn btn-success"> Add Renovation</button>
+            <button onClick={this.props.addReno} type="button" className="btn btn-secondary"> Add Renovation</button>
+            <h1>${total}</h1>
           </div>
-          <div className="col-md-7">
+          <div className="col-md-6">
             <h3>Notes</h3>
             <textarea onChange={this.handleTextArea} name="notes" value={this.state.notes} className="form-control textarea" rows="3" type="text" placeholder="This house is great!" ></textarea>
-            <img src={this.props.reno.get('photo')}/>
             <input onChange={this.handlePicture} type="file" />
-            <button type='submit' className="btn btn-alert">Save Renovation</button> <button className='btn btn-success' onClick={this.handleClick}>favorite</button>
+            <button type='submit' className="btn btn-success">Save Renovation</button>
+            <button className='btn btn-warning' onClick={this.handleFavorite}>favorite</button>
+            <button className='btn btn-info' onClick={this.handleDeleteFavorite}>No more Fave</button>
           </div>
         </form>
       </div>
@@ -116,7 +131,6 @@ var RenovationContainer = React.createClass({
   getInitialState: function(){
     return {
       reno: new Renovation(),
-      // need to use the model because thats all I'm going through
       house: new House()
     }
   },
@@ -200,15 +214,24 @@ var RenovationContainer = React.createClass({
     var house = this.props.house.get('objectId');
     var reno = this.state.reno
     console.log('setfavorite', reno);
-
     var currentUser = localStorage.objectId
     reno.set('saved', {"__op": "AddRelation", "objects": [ {__type: "Pointer", className: "_User", objectId: currentUser}]});
     reno.save();
   },
+  deleteFavorite: function(saved){
+    var house = this.props.house.get('objectId');
+    var reno = this.state.reno
+    console.log('deletefavorite', reno);
+    var currentUser = localStorage.objectId
+    reno.set('saved', {"__op": "RemoveRelation", "objects": [ {__type: "Pointer", className: "_User", objectId: currentUser}]});
+    reno.save();
+  },
+  deleteEstimate: function(estimate){
+    estimate.destroy();
+  },
   render: function(){
-    // console.log('container render', this.state.reno);
     return (
-      <div className="form-inline container well">
+      <div className="form-inline">
         <Form
           reno={this.state.reno}
           renoCollection={this.state.renoCollection}
@@ -217,6 +240,8 @@ var RenovationContainer = React.createClass({
           saveReno={this.saveReno}
           uploadPicture={this.uploadPicture}
           setFavorite={this.setFavorite}
+          deleteFavorite={this.deleteFavorite}
+          deleteEstimate={this.deleteEstimate}
         />
       </div>
     )

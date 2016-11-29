@@ -15,25 +15,23 @@ var Items = React.createClass({
     var houses = this.props.houses.models
       // console.log('houses', houses);
     var houseListing = houses.map(function(house){
-      console.warn('inside map', house);
-      // var address = encodeURIComponent(house.get('Address')).replace(/%20/g, '+');
-      // var amount;
-      // amount = parseFloat(house.get('amount').replace(',', ''))
-      //   var SoldAmount = parseFloat(house.get('SoldAmount').replace('$', '').replace(',', ''))
+      console.log(house);
+      var address = encodeURIComponent(house.get('Address')).replace(/%20/g, '+');
+      var amount;
+      amount = parseFloat(house.get('amount').replace(',', ''))
+        var SoldAmount = parseFloat(house.get('SoldAmount').replace('$', '').replace(',', ''))
       return (
-        <h1>{house}</h1>
-        // <a key={house.get('objectId')} href={'#/details/' + house.get('objectId') + '/'} className="search-tile">
-        //   <div className="col-md-4">
-        //   <img src="https://unsplash.it/300/200/?random"></img>
-        //   <h3>Difference: ${amount-SoldAmount}</h3>
-        //   <h4 href={'#/details/' + house.get('objectId') + '/'}> {house.get('Address')} </h4>
-        //   <p>{house.get('city')} {house.get('zipcode')}</p>
-        //   <p>Foreclose Value: {house.get('SoldAmount')}</p>
-        //   <p>Estimated Value: ${house.get('amount')}</p>
-        // </div></a>
+        <a key={house.get('objectId')} href={'#/details/' + house.get('objectId') + '/'} className="search-tile">
+          <div className="col-md-4">
+          <img src="https://unsplash.it/300/200/?random"></img>
+          <h3>Difference: ${amount-SoldAmount}</h3>
+          <h4 href={'#/details/' + house.get('objectId') + '/'}> {house.get('Address')} </h4>
+          <p>{house.get('city')} {house.get('zipcode')}</p>
+          <p>Foreclose Value: {house.get('SoldAmount')}</p>
+          <p>Estimated Value: ${house.get('amount')}</p>
+        </div></a>
       )
     })
-    // console.log('house:', house);
     return (
         <ul>
           {houseListing}
@@ -66,6 +64,7 @@ var SavedPage = React.createClass({
           renoData.set('objectId', data.house.objectId),
           renoData.fetch().then(function(data){
             self.state.houses.add(data)
+            self.setState({ houses: self.state.houses })
           })
         )
       })
@@ -73,12 +72,6 @@ var SavedPage = React.createClass({
   },
   render: function(){
     console.log('state:', this.state);
-    var houses = this.state.houses
-      console.log('houses', houses);
-    var Listing = houses.map(function(){
-      return
-    })
-      console.log('houselisting', Listing);
     return(
       <div>
         <div>

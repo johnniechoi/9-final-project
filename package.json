@@ -70,6 +70,7 @@
     ]
   },
   "dependencies": {
+    "react-google-maps": "^4.11.0",
     "react-modal": "^1.5.2"
   }
 }

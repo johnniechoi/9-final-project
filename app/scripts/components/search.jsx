@@ -11,8 +11,7 @@ var Items = React.createClass({
   render: function(){
     var self = this
     // console.log(encodeURIComponent());
-    var house = this.props.state.houseCollection.models
-    console.log('search house', house);
+    var house = this.props.houseCollection.models
     var houseListing = house.map(function(house){
 // https://private-03bdb-zillowdata.apiary-mock.com/questions
       //this following is for when I can pull from the Zillow server and didn't hit the limit!
@@ -32,43 +31,29 @@ var Items = React.createClass({
       // })
       // console.log(self);
       return (
-        <div key={house.get('objectId')} className="col-md-4">
-          <a href={'#/details/' + house.get('objectId') + '/'} className="search-tile">
-            <div >
-              <img src="https://unsplash.it/300/200/?random"></img>
-              <h3>Difference: ${amount-SoldAmount}</h3>
-              <h4 href={'#/details/' + house.get('objectId') + '/'}> {house.get('Address')} </h4>
-              <p>{house.get('city')} {house.get('zipcode')}</p>
-              <p>Foreclose Value: {house.get('SoldAmount')}</p>
-              <p>Estimated Value: ${house.get('amount')}</p>
-            </div>
-          </a>
-        </div>
+        <a key={house.get('objectId')} href={'#/details/' + house.get('objectId') + '/'} className="search-tile">
+          <table cellPadding="0" cellSpacing="0" border="0">
+            <tbody>
+              <tr>
+                <td>${amount-SoldAmount}</td>
+                <td>{house.get('Address')}</td>
+                <td>{house.get('city')} {house.get('zipcode')}</td>
+                <td>{house.get('SoldAmount')}</td>
+                <td>${house.get('amount')}</td>
+              </tr>
+            </tbody>
+          </table>
+        </a>
       )
     })
     // console.log('house:', house);
     return (
-        <ul>
-          {houseListing}
-        </ul>
+      <div className="tbl-content ">
+        {houseListing}
+      </div>
     )
   }
 })
-
-// var SearchBar = React.createClass({
-//   render: function(){
-//     return(
-//       <div className="">
-//         <form className="navbar-form navbar-left">
-//           <div className="form-group">
-//             <input type="text" className="form-control" placeholder="Dunno how this works yet!"/>
-//           </div>
-//           <button type="submit" className="btn btn-default">Submit</button>
-//         </form>
-//       </div>
-//     )
-//   }
-// })
 
 var SearchPage = React.createClass({
   getInitialState: function(){
@@ -87,7 +72,6 @@ var SearchPage = React.createClass({
     }
   },
   render: function(){
-    console.log('state:', this.state);
     return(
       <div>
         <div>
@@ -95,7 +79,22 @@ var SearchPage = React.createClass({
         </div>
         <div className="container">
           <div className="col-md-12">
-            <Items state={this.state} setFavorite={this.setFavorite}/>
+            <section>
+              <div className="tbl-header house">
+                <table cellPadding="0" cellSpacing="0" border="0">
+                  <thead>
+                    <tr>
+                      <th>Difference</th>
+                      <th>Street</th>
+                      <th>City/State</th>
+                      <th>Foreclosed Value</th>
+                      <th>Estimated Value</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <Items houseCollection={this.state.houseCollection} setFavorite={this.setFavorite}/>
+            </section>
           </div>
         </div>
       </div>
