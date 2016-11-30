@@ -502,7 +502,7 @@ var LoginContainer = React.createClass({displayName: "LoginContainer",
   render: function(){
     console.log(this.state);
     return(
-      React.createElement("div", {className: ""}, 
+      React.createElement("div", {className: "container"}, 
         React.createElement("div", {className: "col-sm-offset-3 col-sm-6 col-md-offset-3 col-md-6 half-black login-form"}, 
           React.createElement("h2", null, "Login"), 
           React.createElement("form", {onSubmit: this.handleLogin, id: "login"}, 
@@ -640,7 +640,7 @@ var HouseMap = React.createClass({displayName: "HouseMap",
     }.bind(this));
     return (
       React.createElement("div", null, 
-        React.createElement("section", {id: "map-section", style: {height:"525px"}}, 
+        React.createElement("section", {id: "map-section", style: {height:"500px"}}, 
           React.createElement(GoogleMapLoader, {containerElement: 
               React.createElement("div", React.__spread({}, 
                 this.props, 
@@ -1034,10 +1034,12 @@ var SearchPage = React.createClass({displayName: "SearchPage",
 
 
         React.createElement("div", {className: "container"}, 
-          React.createElement("div", {className: "col-md-12 "}, 
+          React.createElement("div", {className: "col-xs-12 "}, 
             React.createElement("div", {className: "search-title"}, React.createElement("h1", null, "Greenville SC Foreclosed Homes")), 
             React.createElement("section", null, 
-              React.createElement(MapContainer, {HouseCollection: this.state.houseCollection}), 
+              React.createElement("div", {className: "map-size"}, 
+                React.createElement(MapContainer, {HouseCollection: this.state.houseCollection})
+              ), 
               React.createElement("div", {className: "tbl-header house"}, 
                 React.createElement("table", {cellPadding: "0", cellSpacing: "0", border: "0"}, 
                   React.createElement("thead", null, 
