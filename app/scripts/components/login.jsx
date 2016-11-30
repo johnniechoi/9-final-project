@@ -133,7 +133,7 @@ var LoginContainer = React.createClass({
   render: function(){
     console.log(this.state);
     return(
-      <div className="">
+      <div className="container">
         <div className="col-sm-offset-3 col-sm-6 col-md-offset-3 col-md-6 half-black login-form">
           <h2>Login</h2>
           <form onSubmit={this.handleLogin} id="login">

@@ -81,10 +81,12 @@ var SearchPage = React.createClass({
 
 
         <div className="container">
-          <div className="col-md-12 ">
+          <div className="col-xs-12 ">
             <div className="search-title" ><h1>Greenville SC Foreclosed Homes</h1></div>
             <section>
-              <MapContainer HouseCollection={this.state.houseCollection}/>
+              <div className="map-size">
+                <MapContainer HouseCollection={this.state.houseCollection}/>
+              </div>
               <div className="tbl-header house">
                 <table cellPadding="0" cellSpacing="0" border="0">
                   <thead>

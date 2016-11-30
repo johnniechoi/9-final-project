@@ -55,7 +55,7 @@ var HouseMap = React.createClass({
     }.bind(this));
     return (
       <div>
-        <section id="map-section" style={{height:"525px"}}>
+        <section id="map-section" style={{height:"500px"}}>
           <GoogleMapLoader containerElement={
               <div
                 {...this.props}
