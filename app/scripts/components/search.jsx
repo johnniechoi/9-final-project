@@ -1,11 +1,12 @@
 var React = require('react')
 var Reactdom = require('react-dom')
 var Backbone = require('backbone')
+var $ = require('jQuery');
 
 var House = require('../models/homes.js').House;
-var HouseCollection = require('../models/homes.js').HouseCollection
+var HouseCollection = require('../models/homes.js').HouseCollection;
 var NavBar = require('../../template.jsx').NavBar;
-var $ = require('jQuery');
+var MapContainer = require('./map.jsx').MapContainer;
 
 var Items = React.createClass({
   render: function(){
@@ -77,9 +78,13 @@ var SearchPage = React.createClass({
         <div>
           <NavBar/>
         </div>
+
+
         <div className="container">
-          <div className="col-md-12">
+          <div className="col-md-12 ">
+            <div className="search-title" ><h1>Greenville SC Foreclosed Homes</h1></div>
             <section>
+              <MapContainer HouseCollection={this.state.houseCollection}/>
               <div className="tbl-header house">
                 <table cellPadding="0" cellSpacing="0" border="0">
                   <thead>

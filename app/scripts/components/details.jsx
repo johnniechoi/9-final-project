@@ -35,66 +35,31 @@ var DisplayDetail = React.createClass({
     var zestimate = house.get('amount')?parseFloat(house.get('amount').replace(',', '')):null
     var difference = zestimate - foreclosedValue;
     return (
-      <div className="">
-        <div className="col-md-6">
+      <div className="col-md-12 col-sm-12">
+        <div className="col-md-6 col-sm-6">
           <h1>{house.get('Address')}</h1>
           <img src={photo}></img>
         </div>
-        <div className="col-md-6 detail-listing">
-          <ol className="rectangle-list row">
+        <div className="col-md-6 col-sm-6 detail-listing">
+          <div className="">
             <li>Case Number: {house.get('CaseNumber')}</li>
             <li>Attorney: {house.get('Attorney')}</li>
             <li>Date of Sale: {house.get('DateofSale')}</li>
             <li>Defendant: {house.get('Defendant')}</li>
             <li>Plaintiff: {house.get('Plaintiff')}</li>
-          </ol>
-          <ol>
+          </div>
+          <div className="value">
             <li>Foreclosed Value: {house.get('SoldAmount')}</li>
             <li>Estimated Value: ${house.get('amount')}</li>
             <li>City: {house.get('city')}</li>
             <li>Zipcode: {house.get('zipcode')}</li>
-            <li><h4>Difference: ${difference}</h4></li>
-          </ol>
+          </div>
+          <h1 className="differences">Difference: ${difference}</h1>
         </div>
       </div>
     )
   }
 })
-
-import {GoogleMapLoader, GoogleMap, Marker} from "react-google-maps";
-
-export default function SimpleMap (props) {
-  return (
-    <section style={{height: "100%"}}>
-      <GoogleMapLoader
-        containerElement={
-          <div
-            {...props.containerElementProps}
-            style={{
-              height: "100%",
-            }}
-          />
-        }
-        googleMapElement={
-          <GoogleMap
-            ref={(map) => console.log(map)}
-            defaultZoom={3}
-            defaultCenter={{ lat: -25.363882, lng: 131.044922 }}
-            onClick={props.onMapClick}
-          >
-            {props.markers.map((marker, index) => {
-              return (
-                <Marker
-                  {...marker}
-                  onRightclick={() => props.onMarkerRightclick(index)} />
-              );
-            })}
-          </GoogleMap>
-        }
-      />
-    </section>
-  );
-}
 
 var DetailsPage = React.createClass({
   getInitialState: function(){
@@ -118,7 +83,7 @@ var DetailsPage = React.createClass({
     return(
       <div>
         <NavBar/>
-        <div className="container">
+        <div className="container well">
           <DisplayDetail house={this.state.house} photo={this.state.reno}/>
           <RenovationContainer house={this.state.house}/>
         </div>

@@ -5,6 +5,8 @@ var Backbone = require('backbone')
 var House = require('../models/homes.js').House;
 var HouseCollection = require('../models/homes.js').HouseCollection
 var RenovationCollection = require('../models/homes.js').RenovationCollection
+var MapContainer = require('./savedmap.jsx').MapContainer;
+
 
 var NavBar = require('../../template.jsx').NavBar;
 var $ = require('jQuery');
@@ -15,21 +17,25 @@ var Items = React.createClass({
     var houses = this.props.houses.models
       // console.log('houses', houses);
     var houseListing = houses.map(function(house){
-      console.log(house);
+      // console.log(house);
       var address = encodeURIComponent(house.get('Address')).replace(/%20/g, '+');
       var amount;
       amount = parseFloat(house.get('amount').replace(',', ''))
         var SoldAmount = parseFloat(house.get('SoldAmount').replace('$', '').replace(',', ''))
       return (
         <a key={house.get('objectId')} href={'#/details/' + house.get('objectId') + '/'} className="search-tile">
-          <div className="col-md-4">
-          <img src="https://unsplash.it/300/200/?random"></img>
-          <h3>Difference: ${amount-SoldAmount}</h3>
-          <h4 href={'#/details/' + house.get('objectId') + '/'}> {house.get('Address')} </h4>
-          <p>{house.get('city')} {house.get('zipcode')}</p>
-          <p>Foreclose Value: {house.get('SoldAmount')}</p>
-          <p>Estimated Value: ${house.get('amount')}</p>
-        </div></a>
+          <table cellPadding="0" cellSpacing="0" border="0">
+            <tbody>
+              <tr>
+                <td>${amount-SoldAmount}</td>
+                <td>{house.get('Address')}</td>
+                <td>{house.get('city')} {house.get('zipcode')}</td>
+                <td>{house.get('SoldAmount')}</td>
+                <td>${house.get('amount')}</td>
+              </tr>
+            </tbody>
+          </table>
+        </a>
       )
     })
     return (
@@ -71,7 +77,7 @@ var SavedPage = React.createClass({
     })
   },
   render: function(){
-    console.log('state:', this.state);
+    // console.log('state:', this.state);
     return(
       <div>
         <div>
@@ -79,7 +85,23 @@ var SavedPage = React.createClass({
         </div>
         <div className="container">
           <div className="col-md-12">
-        <Items houses={this.state.houses}/>
+            <section>
+              <div className="tbl-header house">
+                <table cellPadding="0" cellSpacing="0" border="0">
+                  <thead>
+                    <tr>
+                      <th>Difference</th>
+                      <th>Street</th>
+                      <th>City/State</th>
+                      <th>Foreclosed Value</th>
+                      <th>Estimated Value</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <Items houses={this.state.houses}/>
+              <MapContainer renovationCollection={this.state.renovationCollection}/>
+            </section>
           </div>
         </div>
       </div>

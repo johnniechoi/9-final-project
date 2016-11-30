@@ -22,7 +22,7 @@ var HouseMap = React.createClass({
         lng:  (-82.394012)
       },
     }
-    console.log(this.props.houses);
+    // console.log(this.props.houses);
     return state;
   },
   onMarkerClick: function(props, marker, e){
@@ -37,11 +37,11 @@ var HouseMap = React.createClass({
     var self = this;
     var center = this.state.center;
     var zoom = this.state.zoom;
-    var houses = this.props.houses.map(function(house, index){
+    var houses = this.props.renovationCollection.map(function(house, index){
       var lat = house.get('lat')
       var long = house.get('long')
       var address = house.get('Address')
-        console.log(typeof house.get('Address'));
+        // console.log(typeof house.get('Address'));
       return (
         <Marker key={house.cid} position={{lat: lat, lng:long}}>
           <InfoWindow
@@ -106,8 +106,9 @@ var MapContainer = React.createClass({
   //     };
   // },
   render: function(){
+    console.log('savedmap', this.props);
     return (
-      <HouseMap houses={this.props.HouseCollection}/>
+      <HouseMap renovationCollection={this.props.renovationCollection}/>
     )
   }
 });

@@ -12,6 +12,10 @@ $icon-font-path: '../../node_modules/bootstrap-sass/assets/fonts/bootstrap/';
   box-sizing: border-box;
 }
 
+body{
+  transition: opacity 2s ease-in;
+}
+
 img {
   max-width: 100%;
 }
@@ -105,6 +109,68 @@ td{
   border-bottom: solid 1px rgba(255,255,255,0.1);
 }
 
+.total{
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  // justify-content: center;
+  margin-left: auto;
+}
+
+.totalText{
+  margin-top: -7px;
+  margin-left:  25px;
+}
+
+.totalNumber{
+  border-bottom: 1px solid;
+}
+
+.delete-estimate{
+  border-radius: 3px;
+  margin: 0px;
+  font-size: 8px;
+  background: white;
+  border: 0;
+}
+
+.add-renovation{
+  background: #eaeef2;
+  border: 1px dotted;
+}
+
+.locationTitle{
+  display: table;
+  margin: 0 auto;
+}
+
+#closed{
+  font-weight: lighter;
+}
+
+.value{
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.differences{
+  font-weight: 20px !important;
+}
+
+.signin-text{
+    padding-top: 21px;
+    float: right;
+}
+
+.search-title{
+  display: table;
+  margin: 0 auto;
+}
+
+.btn-xs{
+  margin-top: 15px;
+}
 
 /* demo styles */
 
@@ -122,16 +188,16 @@ section{
   border-radius: 0px;
 }
 
-
-
-/* for custom scrollbar for webkit browser*/
-
-::-webkit-scrollbar {
-    width: 6px;
+.well{
+  margin-top: 30px;
 }
-::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+
+.scene_element {
+  animation-duration: 0.25s;
+  transition-timing-function: ease-in;
+  animation-fill-mode: both;
 }
-::-webkit-scrollbar-thumb {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+
+.scene_element--fadein {
+  animation-name: fadeIn;
 }

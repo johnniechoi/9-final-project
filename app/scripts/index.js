@@ -3,6 +3,10 @@ var ReactDOM = require('react-dom');
 var $ = require('jquery');
 var Backbone = require('backbone');
 var router = require('./router');
+var $ = window.jQuery = window.$ = require('jquery');
+require('bootstrap-sass/assets/javascripts/bootstrap.min.js');
+
+
 
 $(function(){
   Backbone.history.start();

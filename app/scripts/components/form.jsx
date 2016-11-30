@@ -46,7 +46,7 @@ var FormInput = React.createClass({
         </div>
         <div className="form-group">
           <input onChange={this.handleInputChange} value={this.state.estimateCost} type="text" name="estimateCost" id='estimate' className="form-control" placeholder="Estimate" ></input>
-          <button onClick={function(){self.props.deleteEstimate(estimate)}}>X</button>
+          <button className="delete-estimate" onClick={function(){self.props.deleteEstimate(estimate)}}>X</button>
         </div>
       </div>
     )
@@ -92,6 +92,10 @@ var Form = React.createClass({
     var favorite = this.props;
     this.props.deleteFavorite();
   },
+  something: function(e){
+    e.preventDefault
+    alert('hello!')
+  },
   render: function(){
     var self = this
     var formProps = this.props
@@ -105,21 +109,26 @@ var Form = React.createClass({
       return <FormInput key={estimate.cid} estimate={estimate} deleteEstimate={formProps.deleteEstimate} />
     })
     return(
-      <div>
-        <form className="col-md-12 " onSubmit={this.handleSubmit} method="POST" encType="multipart/form-data" action="/dist/">
+      <div className="col-md-12">
+        <form >
           <div className="col-md-6">
             <h3> Renovation Estimate </h3>
             {renoCollectionFormset}
-            <button onClick={this.props.addReno} type="button" className="btn btn-secondary"> Add Renovation</button>
-            <h1>${total}</h1>
+            <div className="total">
+              <button onClick={this.props.addReno} type="button" className="btn btn-primary">Add Renovation</button>
+              <text className="totalText">total:</text>
+              <h1 className="totalNumber" >${total}</h1>
+            </div>
           </div>
+        </form>
+        <form onSubmit={this.handleSubmit} method="POST" encType="multipart/form-data" action="/dist/">
           <div className="col-md-6">
-            <h3>Notes</h3>
+            <h3>Description</h3>
             <textarea onChange={this.handleTextArea} name="notes" value={this.state.notes} className="form-control textarea" rows="3" type="text" placeholder="This house is great!" ></textarea>
             <input onChange={this.handlePicture} type="file" />
-            <button type='submit' className="btn btn-success">Save Renovation</button>
-            <button className='btn btn-warning' onClick={this.handleFavorite}>favorite</button>
-            <button className='btn btn-info' onClick={this.handleDeleteFavorite}>No more Fave</button>
+            <button type='submit' className="btn btn-success ">Save Renovation</button>
+            <button className='btn btn-xs btn-warning' onClick={this.handleFavorite}>Favorite</button>
+            <button className='btn btn-xs btn-info' onClick={this.handleDeleteFavorite}>Not Favorite</button>
           </div>
         </form>
       </div>
@@ -160,6 +169,7 @@ var RenovationContainer = React.createClass({
     });
   },
   addReno: function(estimate){
+    estimate.preventDefault();
     var estimate = this.state.reno.get('estimate')
 
     estimate.add([{}]);
@@ -230,6 +240,7 @@ var RenovationContainer = React.createClass({
     estimate.destroy();
   },
   render: function(){
+    console.log(this.state);
     return (
       <div className="form-inline">
         <Form
